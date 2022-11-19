@@ -39,7 +39,8 @@ class LoginActivity : AppCompatActivity() {
                 binding.password.requestFocus()
                 return@setOnClickListener
             }
-            login(email , password)//            }
+            login(email , password)
+
         }
     }
 
@@ -48,10 +49,17 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if(task.isSuccessful){
                     val intent = Intent(this , MainActivity::class.java)
+                    resetForm()
                     startActivity(intent)
                 }else{
                     Toast.makeText(this , "INVALID CREDENTIAL" , Toast.LENGTH_SHORT).show()
                 }
             }
     }
+
+    private fun resetForm(){
+        binding.email.text.clear()
+        binding.password.text.clear()
+    }
+
 }

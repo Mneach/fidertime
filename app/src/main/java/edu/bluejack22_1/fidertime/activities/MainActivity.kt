@@ -18,10 +18,34 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        replaceFragment(MessageFragment())
-
         binding.bottomNavigationView.itemIconTintList = null
-        binding.bottomNavigationView.selectedItemId = R.id.message
+
+        when(intent.getStringExtra("FragmentOption")) {
+            "profile" -> {
+                binding.bottomNavigationView.selectedItemId = R.id.profile
+                replaceFragment(ProfileFragment())
+            }
+            "contact" -> {
+                binding.bottomNavigationView.selectedItemId = R.id.contact
+                replaceFragment(ContactFragment())
+            }
+            "status" -> {
+                binding.bottomNavigationView.selectedItemId = R.id.status
+                replaceFragment(StatusFragment())
+            }
+            "message" -> {
+                binding.bottomNavigationView.selectedItemId = R.id.message
+                replaceFragment(MessageFragment())
+            }
+            else -> {
+                replaceFragment(MessageFragment())
+
+                binding.bottomNavigationView.selectedItemId = R.id.message
+            }
+        }
+
+
+
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){

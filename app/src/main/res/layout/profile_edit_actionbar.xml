@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:theme="@style/Theme.Fidertime"
+    android:id="@+id/message_toolbar_actionbar"
+    android:layout_width="match_parent"
+    android:layout_height="?actionBarSize"
+    android:background="@color/secondary_color"
+    android:gravity="center"
+    app:contentInsetStartWithNavigation="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="100dp"
+            android:layout_height="45dp"
+            android:text="Cancel"
+            android:gravity="center"
+            android:backgroundTint="@color/ascent_color"
+            android:textColor="@color/white"
+            android:layout_marginLeft="10dp"
+            />
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:text="Edit Profile"
+            />
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/edit_button"
+            android:layout_width="100dp"
+            android:layout_height="45dp"
+            android:text="Edit"
+            android:gravity="center"
+            android:backgroundTint="@color/ascent_color"
+            android:textColor="@color/white"
+            android:layout_marginRight="10dp"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>
