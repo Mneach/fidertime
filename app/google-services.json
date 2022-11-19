@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1007275358557",
+    "firebase_url": "https://tpa-mobile-ft-td-default-rtdb.firebaseio.com",
+    "project_id": "tpa-mobile-ft-td",
+    "storage_bucket": "tpa-mobile-ft-td.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1007275358557:android:4597f1552f99aff14f10b4",
+        "android_client_info": {
+          "package_name": "edu.bluejack22_1.fidertime"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1007275358557-2lh87b42cu38c4svlmmtfv7o6nsai811.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrmTlbuOP4KlmHCIDtzIGftWgPPkfb0ls"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1007275358557-2lh87b42cu38c4svlmmtfv7o6nsai811.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
