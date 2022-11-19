@@ -86,7 +86,6 @@ class MessageListFragment(
 
     override fun onDestroyView() {
         super.onDestroyView()
-        userMessagesListener.remove()
         _binding = null
     }
 

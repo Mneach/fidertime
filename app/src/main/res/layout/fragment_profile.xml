@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_color"
+    tools:context=".fragments.ProfileFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        >
+
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/white"
+            android:text="Budi Badut"
+            android:textSize="24sp"
+            android:paddingLeft="10dp"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/white"
+            android:layout_marginTop="10dp"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:paddingLeft="10sp"
+            >
+
+            <ImageView
+                android:id="@+id/profileImageUrl"
+                android:layout_height="120dp"
+                android:layout_width="120dp"
+                android:src="@drawable/default_avatar"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="25dp"
+                    android:paddingTop="10dp"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        >
+                        <TextView
+                            android:id="@+id/media_count"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:text="120"
+                            android:layout_marginStart="10dp"
+                            android:textSize="20sp"
+                            />
+
+                        <TextView
+                            android:id="@+id/media_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:text="Media"
+                            android:layout_marginStart="10dp"
+                            android:textSize="18sp"
+                            />
+
+                    </LinearLayout>
+
+                    <View android:layout_width="wrap_content"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        >
+                        <TextView
+                            android:id="@+id/file_count"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:text="120"
+                            android:layout_marginStart="10dp"
+                            android:textSize="20sp"
+                            android:textAlignment="center"
+                            />
+
+                        <TextView
+                            android:id="@+id/file_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:text="Files"
+                            android:layout_marginStart="10dp"
+                            android:textSize="18sp"
+                            android:textAlignment="center"
+                            />
+
+                    </LinearLayout>
+
+                    <View android:layout_width="wrap_content"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        >
+                        <TextView
+                            android:id="@+id/link_count"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:text="120"
+                            android:layout_marginStart="10dp"
+                            android:textSize="18sp"
+                            />
+
+                        <TextView
+                            android:id="@+id/link_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:text="Link"
+                            android:layout_marginStart="10dp"
+                            android:textSize="20sp"
+                            />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/edit_button"
+                    android:layout_width="260dp"
+                    android:layout_height="45dp"
+                    android:text="Edit Profile"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@color/ascent_color"
+                    />
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/emailAndPhoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/white"
+            android:text="dummy@gmail.com | +6212341234"
+            android:layout_marginStart="10dp"
+            android:textSize="18sp"
+            />
+
+        <TextView
+            android:id="@+id/bio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/white"
+            android:text="Saya adalah seorang content createor yang sangat handal di bidang"
+            android:layout_marginStart="10dp"
+            android:textSize="18sp"
+            />
+
+    </LinearLayout>
+
+
+
+
+
+</FrameLayout>

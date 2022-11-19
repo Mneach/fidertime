@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/status"
+        android:id="@+id/status"
+        android:icon="@drawable/status_selector"
+        />
+    <item android:title="@string/message"
+        android:id="@+id/message"
+        android:icon="@drawable/chat_selector"
+        />
+    <item android:title="@string/contact"
+        android:id="@+id/contact"
+        android:icon="@drawable/contact_selector"
+        />
+    <item android:title="@string/profile"
+        android:id="@+id/profile"
+        android:icon="@drawable/profile_selector"
+        />
+</menu>
