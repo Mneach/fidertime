@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import coil.load
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.R
@@ -30,6 +31,7 @@ private const val ARG_PARAM2 = "param2"
  */
 class ProfileFragment : Fragment() {
     lateinit var binding : FragmentProfileBinding
+    lateinit var auth : FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +58,7 @@ class ProfileFragment : Fragment() {
             binding.editButton.setOnClickListener(View.OnClickListener {
                 val intent = Intent(context , EditProfileActivity::class.java)
                /* intent.putExtra("UserData" , user)*/
+                auth.signOut()
                 startActivity(intent)
 
             })
