@@ -19,7 +19,7 @@
         <Button
             android:id="@+id/cancel_button"
             android:layout_width="100dp"
-            android:layout_height="45dp"
+            android:layout_height="40dp"
             android:text="Cancel"
             android:gravity="center"
             android:backgroundTint="@color/ascent_color"
@@ -49,7 +49,7 @@
         <Button
             android:id="@+id/edit_button"
             android:layout_width="100dp"
-            android:layout_height="45dp"
+            android:layout_height="40dp"
             android:text="Edit"
             android:gravity="center"
             android:backgroundTint="@color/ascent_color"

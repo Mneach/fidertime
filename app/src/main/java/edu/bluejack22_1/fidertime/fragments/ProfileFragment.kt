@@ -16,6 +16,7 @@ import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.activities.EditProfileActivity
 import edu.bluejack22_1.fidertime.activities.LoginActivity
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
+import edu.bluejack22_1.fidertime.common.Utilities
 import edu.bluejack22_1.fidertime.databinding.FragmentProfileBinding
 import edu.bluejack22_1.fidertime.models.User
 
@@ -31,7 +32,6 @@ private const val ARG_PARAM2 = "param2"
  */
 class ProfileFragment : Fragment() {
     lateinit var binding : FragmentProfileBinding
-    lateinit var auth : FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +47,7 @@ class ProfileFragment : Fragment() {
 
         binding.logoutButton.setOnClickListener {
             val intent = Intent(context, LoginActivity::class.java)
+            Utilities.getAuthFirebase().signOut()
             startActivity(intent)
         }
 
@@ -57,8 +58,7 @@ class ProfileFragment : Fragment() {
             val user : User = it
             binding.editButton.setOnClickListener(View.OnClickListener {
                 val intent = Intent(context , EditProfileActivity::class.java)
-               /* intent.putExtra("UserData" , user)*/
-                auth.signOut()
+                intent.putExtra("UserData" , user)
                 startActivity(intent)
 
             })
