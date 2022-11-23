@@ -1,6 +1,7 @@
 package edu.bluejack22_1.fidertime.common
 
 import android.graphics.Rect
+import android.util.Log
 import android.view.View
 import androidx.core.graphics.or
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,7 +15,8 @@ class MarginItemDecoration(private val spaceSize: Int, private val orientation: 
         state: RecyclerView.State
     ) {
         with(outRect) {
-
+            Log.d("Test" , parent.getChildAdapterPosition(view).toString())
+            Log.d("Test2" , orientation.toString())
             when (orientation) {
                 LinearLayoutManager.HORIZONTAL -> {
                     if (parent.getChildAdapterPosition(view) == 0) {
@@ -22,8 +24,10 @@ class MarginItemDecoration(private val spaceSize: Int, private val orientation: 
                     }
                 }
                 LinearLayoutManager.VERTICAL -> {
+                    top = spaceSize
+
                     if (parent.getChildAdapterPosition(view) == 0) {
-                        bottom = spaceSize
+                        top = 0
                     }
                 }
                 else -> {

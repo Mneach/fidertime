@@ -1,9 +1,12 @@
 package edu.bluejack22_1.fidertime.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import edu.bluejack22_1.fidertime.R
+import edu.bluejack22_1.fidertime.common.Utilities
 import edu.bluejack22_1.fidertime.databinding.ActivityMainBinding
 import edu.bluejack22_1.fidertime.fragments.ContactFragment
 import edu.bluejack22_1.fidertime.fragments.MessageFragment
@@ -18,10 +21,34 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        replaceFragment(MessageFragment())
-
         binding.bottomNavigationView.itemIconTintList = null
-        binding.bottomNavigationView.selectedItemId = R.id.message
+
+        when(intent.getStringExtra("FragmentOption")) {
+            "profile" -> {
+                binding.bottomNavigationView.selectedItemId = R.id.profile
+                replaceFragment(ProfileFragment())
+            }
+            "contact" -> {
+                binding.bottomNavigationView.selectedItemId = R.id.contact
+                replaceFragment(ContactFragment())
+            }
+            "status" -> {
+                binding.bottomNavigationView.selectedItemId = R.id.status
+                replaceFragment(StatusFragment())
+            }
+            "message" -> {
+                binding.bottomNavigationView.selectedItemId = R.id.message
+                replaceFragment(MessageFragment())
+            }
+            else -> {
+                replaceFragment(MessageFragment())
+
+                binding.bottomNavigationView.selectedItemId = R.id.message
+            }
+        }
+
+
+
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){

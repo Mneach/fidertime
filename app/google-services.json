@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1007275358557-q061imju8jspu1dtmcttpv1hr669uocu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.bluejack22_1.fidertime",
+            "certificate_hash": "7a0b7de6e69c32dfccf5fef5725da673f1867833"
+          }
+        },
+        {
           "client_id": "1007275358557-2lh87b42cu38c4svlmmtfv7o6nsai811.apps.googleusercontent.com",
           "client_type": 3
         }
