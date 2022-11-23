@@ -13,6 +13,23 @@
         android:theme="@style/Theme.Fidertime"
         tools:targetApi="31">
         <activity
+            android:name=".FilesListRecyclerViewAdapter"
+            android:exported="false"
+            android:label="@string/title_activity_files_list_recycler_view_adapter"
+            android:theme="@style/Theme.Fidertime.NoActionBar">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".activities.RegisterPhoneNumberActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Fidertime.NoActionBar">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".activities.MessageActivity"
             android:exported="false"
             android:theme="@style/Theme.Fidertime.NoActionBar">
@@ -64,8 +81,7 @@
             android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/Theme.Fidertime.NoActionBar"
-            android:windowSoftInputMode="adjustPan"
-            >
+            android:windowSoftInputMode="adjustPan">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

@@ -1,9 +1,12 @@
 package edu.bluejack22_1.fidertime.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import edu.bluejack22_1.fidertime.R
+import edu.bluejack22_1.fidertime.common.Utilities
 import edu.bluejack22_1.fidertime.databinding.ActivityMainBinding
 import edu.bluejack22_1.fidertime.fragments.ContactFragment
 import edu.bluejack22_1.fidertime.fragments.MessageFragment

@@ -22,19 +22,6 @@ class FirebaseQueries {
 
     companion object {
 
-        fun subscribeToUser(userId: String, callback: (user: User) -> Unit) {
-            val userRef = Firebase.firestore.collection("users").document(userId)
-            userRef.addSnapshotListener {snapshot, e ->
-                if (e != null) {
-                    return@addSnapshotListener
-                }
-                if (snapshot != null && snapshot.exists()) {
-                    val user = snapshot.toObject<User>()
-                    user!!.id = snapshot.id
-                    callback.invoke(user)
-                }
-            }
-        }
 
         fun getUsers(callback: (users : ArrayList<User>) -> Unit){
             val usersRef = Firebase.firestore.collection("users")
@@ -46,6 +33,50 @@ class FirebaseQueries {
                     users.add(user)
                 }
                 callback.invoke(users)
+            }
+        }
+
+        fun getUserById(userId: String , callback : (user : User) -> Unit){
+
+            val usersRef = Firebase.firestore.collection("users").document(userId)
+            usersRef.get().addOnSuccessListener{value ->
+                if (value != null && value.exists()) {
+                    val user = value.toObject<User>()
+                    user!!.id = value.id
+                    callback.invoke(user)
+                }else{
+                    // return object with empty value
+                    val user = User()
+                    callback.invoke(user)
+                }
+            }
+        }
+
+        fun getUserByPhoneNumber(phoneNumber: String , callback : (user : ArrayList<User>) -> Unit){
+            val usersRef = Firebase.firestore.collection("users")
+            usersRef.whereEqualTo("phoneNumber", phoneNumber)
+                .get().addOnSuccessListener{value ->
+                    val users = ArrayList<User>()
+                    for (doc in value!!) {
+                        val user = doc.toObject<User>()
+                        user.id = doc.id
+                        users.add(user)
+                    }
+                    callback.invoke(users)
+            }
+        }
+
+        fun subscribeToUser(userId: String, callback: (user: User) -> Unit) {
+            val userRef = Firebase.firestore.collection("users").document(userId)
+            userRef.addSnapshotListener {snapshot, e ->
+                if (e != null) {
+                    return@addSnapshotListener
+                }
+                if (snapshot != null && snapshot.exists()) {
+                    val user = snapshot.toObject<User>()
+                    user!!.id = snapshot.id
+                    callback.invoke(user)
+                }
             }
         }
 

@@ -19,8 +19,7 @@ class MessageListPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifec
 
         val db = Firebase.firestore
         val userId = "Km69GgIsRZhgKUsb0aIq0YSZWVX2"
-
-        return when (position) {
+         return when (position) {
             0 -> {
                 MessageListFragment(
                     db.collection("messages").whereArrayContains("members", userId).orderBy("lastChatTimestamp", Direction.DESCENDING)

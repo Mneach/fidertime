@@ -17,4 +17,14 @@ class RelativeDateAdapter(private val date: Date) {
         return formatter.format(date)
     }
 
+    fun getDateFormat(): String {
+        val formatter = SimpleDateFormat("dd.MM.yy", Locale.ENGLISH)
+        return formatter.format(date)
+    }
+
+    fun getTimeFormat(): String {
+        val formatter = SimpleDateFormat("HH:mm", Locale.ENGLISH)
+        return formatter.format(date)
+    }
+
 }

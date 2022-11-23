@@ -15,4 +15,6 @@
     <string name="message">Message</string>
     <string name="contact">Contact</string>
     <string name="profile">Profile</string>
+    <string name="title_activity_files_list_recycler_view_adapter">FilesListRecyclerViewAdapter
+    </string>
 </resources>

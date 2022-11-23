@@ -76,6 +76,12 @@ class EditProfileActivity : AppCompatActivity() {
         var bio = binding.bioInput.text.toString()
         var uid = Utilities.getAuthFirebase().uid
 
+        if(bio.length > 200){
+            binding.bioInput.error = "Bio must be less than 200 characters"
+            binding.bioInput.requestFocus()
+            return
+        }
+
         FirebaseQueries.getUsers{
 
             var checkName = false

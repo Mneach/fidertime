@@ -9,12 +9,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import coil.load
-import com.google.firebase.auth.FirebaseAuth
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.activities.EditProfileActivity
 import edu.bluejack22_1.fidertime.activities.LoginActivity
+import edu.bluejack22_1.fidertime.activities.MainActivity
+import edu.bluejack22_1.fidertime.adapters.ProfileMediaListPagerAdapter
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.common.Utilities
 import edu.bluejack22_1.fidertime.databinding.FragmentProfileBinding
@@ -25,11 +28,6 @@ import edu.bluejack22_1.fidertime.models.User
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ProfileFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ProfileFragment : Fragment() {
     lateinit var binding : FragmentProfileBinding
 
@@ -44,11 +42,23 @@ class ProfileFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentProfileBinding.inflate(inflater, container, false)
-
+        initializeTabs()
         binding.logoutButton.setOnClickListener {
             val intent = Intent(context, LoginActivity::class.java)
-            Utilities.getAuthFirebase().signOut()
-            startActivity(intent)
+
+            val mainActivity : MainActivity = activity as MainActivity
+
+            if(GoogleSignIn.getLastSignedInAccount(mainActivity) != null){
+                // SIGN OUT IF USER LOGIN WITH GOOGLE
+                Utilities.getGoogleSignInClient(mainActivity).signOut().addOnCompleteListener{
+                    startActivity(intent)
+                }
+            }else{
+                // SIGN OUT IF USER LOGIN WITH FIREBASE
+                Utilities.getAuthFirebase().signOut()
+                startActivity(intent)
+            }
+
         }
 
         FirebaseQueries.subscribeToUser(Firebase.auth.currentUser!!.uid.toString()) {
@@ -65,6 +75,26 @@ class ProfileFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun initializeTabs() {
+        val messageListPagerAdapter = ProfileMediaListPagerAdapter(parentFragmentManager, lifecycle)
+        binding.pagerMessageList.adapter = messageListPagerAdapter
+        Log.d("tabs", "masuk")
+
+        TabLayoutMediator(binding.tabLayoutMessageList, binding.pagerMessageList) {tab, position ->
+            when (position) {
+                0 -> {
+                    tab.text = "Image"
+                }
+                1 -> {
+                    tab.text = "Files"
+                }
+                2 -> {
+                    tab.text = "Links"
+                }
+            }
+        }.attach()
     }
 
     private fun attachUserData(it : User){

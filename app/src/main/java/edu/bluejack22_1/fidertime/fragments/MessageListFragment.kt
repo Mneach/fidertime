@@ -39,7 +39,7 @@ class MessageListFragment(
         _binding = FragmentMessageListBinding.inflate(inflater, container, false)
         recyclerViewMessages = binding.recyclerViewMessages
         recyclerViewMessages.layoutManager = LinearLayoutManager(this.context)
-        recyclerViewMessages.addItemDecoration(MarginItemDecoration(40, null))
+        recyclerViewMessages.addItemDecoration(MarginItemDecoration(40, LinearLayoutManager.VERTICAL))
 
         subscribeToUserMessages()
         return binding.root
