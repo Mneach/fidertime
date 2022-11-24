@@ -2,6 +2,7 @@ package edu.bluejack22_1.fidertime.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -27,7 +28,7 @@ class MediaListFragment (
     private val binding get() = _binding!!
     private lateinit var recyclerViewMessages: RecyclerView
     private lateinit var userMediaListener : ListenerRegistration
-
+    private lateinit var adapter : MediaListRecyclerViewAdapter;
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,30 +39,23 @@ class MediaListFragment (
         recyclerViewMessages = binding.recyclerViewMedia
         recyclerViewMessages.layoutManager = GridLayoutManager(this.context , 3)
 
-        subscribeToUserMedia()
+        attachRecyclerViewAdapter(mediaRef)
         return binding.root
     }
 
-    private fun subscribeToUserMedia() {
-        userMediaListener = mediaRef.addSnapshotListener { value, e ->
-            if (e != null) {
-                return@addSnapshotListener
-            }
-            if (value != null && !value.isEmpty) {
-                val userMedia = arrayListOf<Media>()
-                for (doc in value) {
-                    val media = doc.toObject<Media>()
-                    media.id = doc.id
-                    userMedia.add(media)
-                }
-                attachRecyclerViewAdapter(userMedia)
-            }
-        }
+    private fun attachRecyclerViewAdapter(query: Query) {
+        adapter = MediaListRecyclerViewAdapter(query)
+        recyclerViewMessages.adapter = adapter
     }
 
-    private fun attachRecyclerViewAdapter(userMedia: ArrayList<Media>) {
-        val adapter = MediaListRecyclerViewAdapter(userMedia)
-        recyclerViewMessages.adapter = adapter
+    override fun onStart() {
+        super.onStart()
+        adapter.startListening()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        adapter.stopListening()
     }
 
     companion object {

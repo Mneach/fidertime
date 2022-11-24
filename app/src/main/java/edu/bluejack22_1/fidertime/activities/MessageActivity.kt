@@ -91,6 +91,7 @@ class MessageActivity : AppCompatActivity() {
             binding.toolbarMessage.actionBarProfile.setOnClickListener{
                 val intent = Intent(this , MessagePersonalDetailActivity::class.java)
                 intent.putExtra("userId" , withUserId)
+                intent.putExtra("messageId" , messageId);
                 startActivity(intent)
             }
         }

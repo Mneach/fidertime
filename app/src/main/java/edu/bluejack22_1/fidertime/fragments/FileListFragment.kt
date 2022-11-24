@@ -39,7 +39,7 @@ class FileListFragment (
     private var _binding: FragmentFileListBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerViewMessages: RecyclerView
-    private lateinit var userMediaListener : ListenerRegistration
+    private lateinit var adapter : FileListRecyclerViewAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,29 +51,23 @@ class FileListFragment (
         recyclerViewMessages.layoutManager = LinearLayoutManager(this.context)
         recyclerViewMessages.addItemDecoration(MarginItemDecoration(40, LinearLayoutManager.VERTICAL))
 
-        subscribeToFiles()
+        attachRecyclerViewAdapter(imageRef)
         return binding.root
     }
 
-    private fun subscribeToFiles() {
-        userMediaListener = imageRef.addSnapshotListener { value, e ->
-            if (e != null) {
-                return@addSnapshotListener
-            }
-            if (value != null && !value.isEmpty) {
-                val userFiles = arrayListOf<Media>()
-                for (doc in value) {
-                    val media = doc.toObject<Media>()
-                    media.id = doc.id
-                    userFiles.add(media)
-                }
-                attachRecyclerViewAdapter(userFiles)
-            }
-        }
+    private fun attachRecyclerViewAdapter(query : Query) {
+        adapter = FileListRecyclerViewAdapter(query)
+        recyclerViewMessages.adapter = adapter
     }
 
-    private fun attachRecyclerViewAdapter(userMedia: ArrayList<Media>) {
-        val adapter = FileListRecyclerViewAdapter(userMedia)
-        recyclerViewMessages.adapter = adapter
+
+    override fun onStart() {
+        super.onStart()
+        adapter.startListening()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        adapter.stopListening()
     }
 }
