@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.ContactFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <Button
+        android:id="@+id/button_read_contact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Contact Fragment"
-        android:textSize="26dp"
-        android:layout_gravity="center"
+        android:layout_centerHorizontal="true"
+        android:text="Read Contact" />
+    
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/contact_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/button_read_contact"
         />
-
-</FrameLayout>
+</RelativeLayout>

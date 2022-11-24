@@ -85,7 +85,7 @@ class ProfileFragment : Fragment() {
         TabLayoutMediator(binding.tabLayoutMessageList, binding.pagerMessageList) {tab, position ->
             when (position) {
                 0 -> {
-                    tab.text = "Image"
+                    tab.text = "Media"
                 }
                 1 -> {
                     tab.text = "Files"
