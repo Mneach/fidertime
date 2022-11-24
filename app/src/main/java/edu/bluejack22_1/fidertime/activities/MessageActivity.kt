@@ -5,8 +5,12 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.google.firebase.Timestamp
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -15,13 +19,16 @@ import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.common.MarginItemDecoration
 import edu.bluejack22_1.fidertime.common.Utilities
 import edu.bluejack22_1.fidertime.databinding.ActivityMessageBinding
+import edu.bluejack22_1.fidertime.models.Chat
 import edu.bluejack22_1.fidertime.models.Message
 import edu.bluejack22_1.fidertime.models.User
 
 class MessageActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMessageBinding
     private lateinit var messageId: String
-    private val userId = "Km69GgIsRZhgKUsb0aIq0YSZWVX2"
+    private lateinit var adapter: ChatListRecyclerViewAdapter
+    private lateinit var recyclerView: RecyclerView
+    private val userId = Firebase.auth.currentUser!!.uid
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,16 +39,34 @@ class MessageActivity : AppCompatActivity() {
 
         initializeActionBar()
         initializeRecyclerView()
+        initializeChatBox()
+    }
+
+    private fun initializeChatBox() {
+        val sendButton = binding.buttonSend
+        val editTextChat = binding.editTextChat
+
+        sendButton.setOnClickListener {
+            if (editTextChat.text.isNotEmpty()) {
+                val chat = Chat("", editTextChat.text.toString(), "text", messageId, arrayListOf(), userId, Timestamp.now())
+                FirebaseQueries.sendChatText(chat)
+                FirebaseQueries.updateMessageLastChat(chat)
+                editTextChat.text.clear()
+            }
+        }
     }
 
     private fun initializeRecyclerView() {
-        val recyclerView = binding.recyclerViewChats
-        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
+        recyclerView = binding.recyclerViewChats
+        val layoutManager = LinearLayoutManager(this)
+        layoutManager.orientation = LinearLayoutManager.VERTICAL
+        layoutManager.reverseLayout = true
+        recyclerView.layoutManager = layoutManager
         recyclerView.addItemDecoration(MarginItemDecoration(40, LinearLayoutManager.VERTICAL))
-        FirebaseQueries.subscribeToChats(messageId, null) {
-            val adapter = ChatListRecyclerViewAdapter(it)
-            recyclerView.adapter = adapter
-        }
+        val query = Firebase.firestore.collection("chats").whereEqualTo("messageId", messageId)
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+        adapter = ChatListRecyclerViewAdapter(query)
+        recyclerView.adapter = adapter
     }
 
     private fun initializeActionBar() {
@@ -89,5 +114,19 @@ class MessageActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onStart() {
+        super.onStart()
+        adapter.startListening()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        adapter.startListening()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        FirebaseQueries.updateMemberLastVisit(messageId, userId)
+    }
 
 }

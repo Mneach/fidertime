@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -38,13 +39,13 @@ class MessageListRecyclerViewAdapter(private val messages: ArrayList<Message>) :
     class ViewHolder(private val itemBinding: FragmentMessageItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
 
         private val db = Firebase.firestore
-        private val userId = "Km69GgIsRZhgKUsb0aIq0YSZWVX2"
+        private val userId = Firebase.auth.currentUser!!.uid
 
         fun bind(messageItem: Message) {
+            itemBinding.textViewUnreadChatCount.visibility = View.GONE
             itemBinding.textViewLastChat.text = messageItem.lastChatText
             itemBinding.textViewTime.text = messageItem.lastChatTimestamp?.toDate()
                 ?.let { RelativeDateAdapter(it).getRelativeString() }
-            itemBinding.textViewUnreadChatCount.visibility = View.GONE
 
             setNameAndProfile(messageItem)
             subscribeToUnreadChatCount(messageItem)
@@ -73,8 +74,10 @@ class MessageListRecyclerViewAdapter(private val messages: ArrayList<Message>) :
                 unreadChatCountQuery.get(AggregateSource.SERVER).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val snapshot = task.result
-                        itemBinding.textViewUnreadChatCount.text = snapshot.count.toString()
-                        itemBinding.textViewUnreadChatCount.visibility = View.VISIBLE
+                        if (snapshot.count > 0) {
+                            itemBinding.textViewUnreadChatCount.visibility = View.VISIBLE
+                            itemBinding.textViewUnreadChatCount.text = snapshot.count.toString()
+                        }
                     }
                 }
             }

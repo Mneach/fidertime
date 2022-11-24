@@ -9,7 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.activities.MessageActivity
 import edu.bluejack22_1.fidertime.adapters.MessageListPagerAdapter
 import edu.bluejack22_1.fidertime.adapters.PinnedMessageListRecyclerViewAdapter
@@ -38,8 +40,8 @@ class MessageFragment : Fragment() {
     private fun initializeRecyclerView() {
         binding.recyclerViewPinnedMessages.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerViewPinnedMessages.addItemDecoration(MarginItemDecoration(40, LinearLayoutManager.HORIZONTAL))
-        val userId = "Km69GgIsRZhgKUsb0aIq0YSZWVX2"
-        userMessagesListener = FirebaseQueries.subscribeToUserPinnedMessages(userId) {
+        val userId = Firebase.auth.currentUser?.uid
+        userMessagesListener = FirebaseQueries.subscribeToUserPinnedMessages(userId!!) {
             attachRecyclerViewAdapter(it)
         }
     }
