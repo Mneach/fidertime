@@ -33,6 +33,11 @@ class LoginActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
+        if(Utilities.getAuthFirebase().uid != null){
+            val intent = Intent(this , MainActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.tvToRegister.setOnClickListener(View.OnClickListener{
             startActivity(
                 Intent(this , RegisterActivity::class.java)

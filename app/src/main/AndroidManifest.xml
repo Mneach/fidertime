@@ -13,9 +13,8 @@
         android:theme="@style/Theme.Fidertime"
         tools:targetApi="31">
         <activity
-            android:name=".FilesListRecyclerViewAdapter"
+            android:name=".activities.MessagePersonalDetailActivity"
             android:exported="false"
-            android:label="@string/title_activity_files_list_recycler_view_adapter"
             android:theme="@style/Theme.Fidertime.NoActionBar">
             <meta-data
                 android:name="android.app.lib_name"

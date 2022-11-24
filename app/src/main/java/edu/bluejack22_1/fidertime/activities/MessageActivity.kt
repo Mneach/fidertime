@@ -1,5 +1,6 @@
 package edu.bluejack22_1.fidertime.activities
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -12,6 +13,7 @@ import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.adapters.ChatListRecyclerViewAdapter
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.common.MarginItemDecoration
+import edu.bluejack22_1.fidertime.common.Utilities
 import edu.bluejack22_1.fidertime.databinding.ActivityMessageBinding
 import edu.bluejack22_1.fidertime.models.Message
 import edu.bluejack22_1.fidertime.models.User
@@ -59,6 +61,12 @@ class MessageActivity : AppCompatActivity() {
             val withUserId = message.members.find { memberId -> memberId != userId }
             FirebaseQueries.subscribeToUser(withUserId!!) {
                 setNameAndProfile(it)
+            }
+
+            binding.toolbarMessage.actionBarProfile.setOnClickListener{
+                val intent = Intent(this , MessagePersonalDetailActivity::class.java)
+                intent.putExtra("userId" , withUserId)
+                startActivity(intent)
             }
         }
     }

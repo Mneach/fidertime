@@ -11,6 +11,8 @@
     <color name="primary_color">#171717</color>
     <color name="secondary_color">#1E1E1E</color>
     <color name="ascent_color">#DA0037</color>
+    <color name="ascent_color_opacity_50">#D76682</color>
     <color name="hint_color">#DFDFDF</color>
     <color name="disable_color">#A9A9A9</color>
+
 </resources>
