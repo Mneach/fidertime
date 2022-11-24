@@ -19,43 +19,95 @@
         android:id="@+id/recycler_view_chats"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="16dp"
         app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toTopOf="@+id/layout_chatbox"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_message"
-        android:padding="10dp"
+        android:paddingHorizontal="10dp"
         tools:listitem="@layout/fragment_chat_item_in"/>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_attachment"
+        android:layout_width="0dp"
+        android:layout_height="128dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintBottom_toBottomOf="@+id/recycler_view_chats"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@color/primary_color">
+
+        <ImageButton
+            android:id="@+id/button_file"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@color/ascent_color"
+            android:src="@drawable/ic_baseline_attach_file_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button_gallery"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <ImageButton
+            android:id="@+id/button_gallery"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@color/ascent_color"
+            android:src="@drawable/ic_baseline_image_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/button_file"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_chatbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
+        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal">
 
         <EditText
-            android:layout_marginStart="16dp"
             android:id="@+id/edit_text_chat"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/button_send"
             android:background="@android:color/transparent"
             android:hint="Enter Message"
             android:inputType="text"
             android:maxLines="6"
+            android:layout_marginHorizontal="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button_attachment"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:ignore="Autofill" />
 
         <ImageButton
-            android:id="@+id/button_send"
-            android:layout_width="64dp"
+            android:id="@+id/button_attachment"
+            android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
+            android:background="?attr/selectableItemBackground"
+            android:src="@drawable/ic_baseline_attach_file_24"
+            android:textColor="@color/primary_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button_send"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/button_send"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="?attr/selectableItemBackground"
             android:src="@drawable/ic_baseline_send_24"
-            android:textColor="@color/primary_color" />
+            android:textColor="@color/primary_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

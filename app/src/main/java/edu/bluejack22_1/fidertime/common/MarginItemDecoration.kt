@@ -15,8 +15,6 @@ class MarginItemDecoration(private val spaceSize: Int, private val orientation: 
         state: RecyclerView.State
     ) {
         with(outRect) {
-            Log.d("Test" , parent.getChildAdapterPosition(view).toString())
-            Log.d("Test2" , orientation.toString())
             when (orientation) {
                 LinearLayoutManager.HORIZONTAL -> {
                     left = spaceSize / 2

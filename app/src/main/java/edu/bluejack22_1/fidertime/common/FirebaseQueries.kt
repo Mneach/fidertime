@@ -4,9 +4,11 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.ProgressBar
 import android.widget.Toast
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query.Direction
@@ -14,10 +16,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import edu.bluejack22_1.fidertime.models.Chat
-import edu.bluejack22_1.fidertime.models.Message
-import edu.bluejack22_1.fidertime.models.User
-import edu.bluejack22_1.fidertime.models.UserMessage
+import edu.bluejack22_1.fidertime.models.*
 
 class FirebaseQueries {
 
@@ -165,6 +164,18 @@ class FirebaseQueries {
                 }
         }
 
+        fun uploadImage(filePath: Uri, callback: (imageUrl: String) -> Unit) {
+            val userId = Firebase.auth.currentUser?.uid
+            val imageName = Utilities.getImageName(filePath.path.toString())
+            val storageReference = FirebaseStorage.getInstance().getReference("$userId/images/$imageName")
+
+            storageReference.putFile(filePath).addOnSuccessListener { task ->
+                task.storage.downloadUrl.addOnSuccessListener { imageUrl ->
+                    callback.invoke(imageUrl.toString())
+                }
+            }
+        }
+
         fun sendChatText(chat: Chat) {
             Firebase.firestore.collection("chats").add(chat)
         }
@@ -182,6 +193,17 @@ class FirebaseQueries {
             Firebase.firestore.collection("messages").document(messageId)
                 .collection("members").document(userId)
                 .update("lastVisitTimestamp", Timestamp.now())
+        }
+
+        fun addUserMedia(type: String, url: String, messageId: String) {
+            val userId = Firebase.auth.currentUser!!.uid
+            val media = Media("", null, messageId, Timestamp.now(), userId, type, null, url)
+            Firebase.firestore.collection("media").add(media)
+        }
+
+        fun addUserMedia(chat: Chat) {
+            val media = Media("", null, chat.messageId, Timestamp.now(), chat.senderUserId, chat.chatType, null, chat.imageUrl)
+            Firebase.firestore.collection("media").add(media)
         }
     }
 }

@@ -1,6 +1,7 @@
 package edu.bluejack22_1.fidertime.adapters
 
-import android.content.Intent
+import FirestoreAdapter
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,16 +9,17 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.AggregateSource
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
-import edu.bluejack22_1.fidertime.activities.MessageActivity
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.common.RelativeDateAdapter
 import edu.bluejack22_1.fidertime.databinding.FragmentMessageItemBinding
 import edu.bluejack22_1.fidertime.models.*
 
-class MessageListRecyclerViewAdapter(private val messages: ArrayList<Message>) : RecyclerView.Adapter<MessageListRecyclerViewAdapter.ViewHolder>() {
+class MessageListRecyclerViewAdapter(query: Query) : FirestoreAdapter<MessageListRecyclerViewAdapter.ViewHolder>(query) {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val itemBinding = FragmentMessageItemBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
@@ -25,14 +27,12 @@ class MessageListRecyclerViewAdapter(private val messages: ArrayList<Message>) :
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val messageItem = messages[position]
-        viewHolder.bind(messageItem)
+        val snapshot = getSnapshot(position)
+        viewHolder.bind(snapshot)
         viewHolder.itemView.setOnClickListener {
-            onItemClick?.invoke(messageItem.id)
+            snapshot?.id?.let { it1 -> onItemClick?.invoke(it1) }
         }
     }
-
-    override fun getItemCount() = messages.size
 
     var onItemClick : ((String) -> Unit)? = null
 
@@ -41,12 +41,13 @@ class MessageListRecyclerViewAdapter(private val messages: ArrayList<Message>) :
         private val db = Firebase.firestore
         private val userId = Firebase.auth.currentUser!!.uid
 
-        fun bind(messageItem: Message) {
+        fun bind(snapshot: DocumentSnapshot?) {
+            val messageItem = snapshot!!.toObject<Message>()!!
+            messageItem.id = snapshot.id
             itemBinding.textViewUnreadChatCount.visibility = View.GONE
             itemBinding.textViewLastChat.text = messageItem.lastChatText
             itemBinding.textViewTime.text = messageItem.lastChatTimestamp?.toDate()
                 ?.let { RelativeDateAdapter(it).getRelativeString() }
-
             setNameAndProfile(messageItem)
             subscribeToUnreadChatCount(messageItem)
         }
