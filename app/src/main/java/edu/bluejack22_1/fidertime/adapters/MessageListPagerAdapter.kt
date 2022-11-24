@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.Query.Direction
 import com.google.firebase.firestore.ktx.firestore
@@ -18,7 +19,7 @@ class MessageListPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifec
     override fun createFragment(position: Int): Fragment {
 
         val db = Firebase.firestore
-        val userId = "Km69GgIsRZhgKUsb0aIq0YSZWVX2"
+        val userId = Firebase.auth.currentUser!!.uid
          return when (position) {
             0 -> {
                 MessageListFragment(

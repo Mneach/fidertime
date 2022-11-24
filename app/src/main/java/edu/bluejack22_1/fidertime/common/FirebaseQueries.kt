@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
@@ -162,6 +163,25 @@ class FirebaseQueries {
                     var currentProgress = (100.0 * it.bytesTransferred) / it.totalByteCount
                     progressDialog.setMessage("Progress ${currentProgress.toInt()}%")
                 }
+        }
+
+        fun sendChatText(chat: Chat) {
+            Firebase.firestore.collection("chats").add(chat)
+        }
+
+        fun updateMessageLastChat(chat: Chat) {
+            val messageId = chat.messageId
+            Firebase.firestore.collection("messages").document(messageId).update(mapOf(
+                "lastChatText" to chat.chatText,
+                "lastChatTimestamp" to chat.timestamp,
+                "lastChatType" to chat.chatType
+            ))
+        }
+
+        fun updateMemberLastVisit(messageId: String, userId: String) {
+            Firebase.firestore.collection("messages").document(messageId)
+                .collection("members").document(userId)
+                .update("lastVisitTimestamp", Timestamp.now())
         }
     }
 }

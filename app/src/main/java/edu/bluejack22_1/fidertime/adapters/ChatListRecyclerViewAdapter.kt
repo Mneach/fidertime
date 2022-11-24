@@ -1,19 +1,25 @@
 package edu.bluejack22_1.fidertime.adapters
 
+import FirestoreAdapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.common.RelativeDateAdapter
 import edu.bluejack22_1.fidertime.databinding.FragmentChatItemInBinding
 import edu.bluejack22_1.fidertime.databinding.FragmentChatItemOutBinding
 import edu.bluejack22_1.fidertime.models.Chat
 
-class ChatListRecyclerViewAdapter(private val chats: ArrayList<Chat>) : RecyclerView.Adapter<ChatListRecyclerViewAdapter.ViewHolder>() {
+class ChatListRecyclerViewAdapter(query: Query) : FirestoreAdapter<ChatListRecyclerViewAdapter.ViewHolder>(query) {
 
-    private val userId = "Km69GgIsRZhgKUsb0aIq0YSZWVX2"
+    private val userId = Firebase.auth.currentUser!!.uid
     private val CHAT_IN = 1
     private val CHAT_OUT = 2
 
@@ -28,30 +34,29 @@ class ChatListRecyclerViewAdapter(private val chats: ArrayList<Chat>) : Recycler
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (getItemViewType(position) == CHAT_OUT) {
-            (holder as ChatOutViewHolder).bind(chats[position])
+            getSnapshot(position)?.let { snapshot -> (holder as ChatOutViewHolder).bind(snapshot) }
         }
         else {
-            (holder as ChatInViewHolder).bind(chats[position])
+            getSnapshot(position)?.let { snapshot -> (holder as ChatInViewHolder).bind(snapshot) }
         }
     }
 
-    override fun getItemCount() = chats.size
-
     override fun getItemViewType(position: Int): Int {
-        if (chats[position].senderUserId == userId) {
+        if (getSnapshot(position)?.get("senderUserId") == userId) {
             return CHAT_OUT
         }
         return CHAT_IN
     }
 
     open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        open fun bind(chat: Chat) {}
+        open fun bind(chat: DocumentSnapshot) {}
     }
 
     class ChatInViewHolder(private val binding: FragmentChatItemInBinding, itemView: View) : ViewHolder(
         itemView
     ) {
-        override fun bind(chat: Chat) {
+        override fun bind(snapshot: DocumentSnapshot) {
+            val chat = snapshot.toObject<Chat>()!!
             binding.textViewChat.text = chat.chatText
             binding.textViewTimestamp.text = chat.timestamp?.toDate()
                 ?.let { RelativeDateAdapter(it).getHourMinuteFormat() }
@@ -65,7 +70,8 @@ class ChatListRecyclerViewAdapter(private val chats: ArrayList<Chat>) : Recycler
     class ChatOutViewHolder(private val binding: FragmentChatItemOutBinding, itemView: View) : ViewHolder(
         itemView
     ) {
-        override fun bind(chat: Chat) {
+        override fun bind(snapshot: DocumentSnapshot) {
+            val chat = snapshot.toObject<Chat>()!!
             binding.textViewChat.text = chat.chatText
             binding.textViewReadBy.text = "Read ${chat.readBy.size.toString()}"
             binding.textViewTimestamp.text = chat.timestamp?.toDate()

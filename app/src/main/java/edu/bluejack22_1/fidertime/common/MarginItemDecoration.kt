@@ -19,20 +19,24 @@ class MarginItemDecoration(private val spaceSize: Int, private val orientation: 
             Log.d("Test2" , orientation.toString())
             when (orientation) {
                 LinearLayoutManager.HORIZONTAL -> {
+                    left = spaceSize / 2
+                    right = spaceSize / 2
                     if (parent.getChildAdapterPosition(view) == 0) {
-                        right = spaceSize
+                        left = 0
                     }
                 }
                 LinearLayoutManager.VERTICAL -> {
-                    top = spaceSize
-
+                    top = spaceSize / 2
+                    bottom = spaceSize / 2
                     if (parent.getChildAdapterPosition(view) == 0) {
                         top = 0
                     }
                 }
                 else -> {
+                    top = spaceSize / 2
+                    bottom = spaceSize / 2
                     if (parent.getChildAdapterPosition(view) == 0) {
-                        bottom = spaceSize
+                        top = 0
                     }
                 }
             }
