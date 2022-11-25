@@ -42,7 +42,6 @@ class MessagePersonalDetailActivity : AppCompatActivity() {
     private fun initializeTabs(messageId : String) {
         val messageListPagerAdapter = MessagePersonalMediaPagerAdapter(supportFragmentManager, lifecycle , messageId)
         binding.pagerMessageList.adapter = messageListPagerAdapter
-        Log.d("tabs", "masuk")
 
         TabLayoutMediator(binding.tabLayoutMessageList, binding.pagerMessageList) {tab, position ->
             when (position) {

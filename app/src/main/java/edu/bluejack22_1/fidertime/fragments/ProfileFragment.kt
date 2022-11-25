@@ -45,6 +45,7 @@ class ProfileFragment : Fragment() {
         initializeTabs()
         binding.logoutButton.setOnClickListener {
             val intent = Intent(context, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
             val mainActivity : MainActivity = activity as MainActivity
 

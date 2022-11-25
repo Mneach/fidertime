@@ -49,11 +49,11 @@ class LoginActivity : AppCompatActivity() {
             val password = binding.password.text.toString()
 
             if(email.isEmpty()){
-                binding.email.error = "Email / Phone number cannot be null"
+                binding.email.error = getString(R.string.email_null_validation)
                 binding.email.requestFocus()
                 return@setOnClickListener
             }else if(password.isEmpty()){
-                binding.password.error = "Password cannot be null"
+                binding.password.error = getString(R.string.password_null_validation)
                 binding.password.requestFocus()
                 return@setOnClickListener
             }
@@ -109,7 +109,6 @@ class LoginActivity : AppCompatActivity() {
                         user.email = account.email.toString()
                         user.name = account.displayName.toString()
                         user.profileImageUrl = account.photoUrl.toString()
-                        Log.d("User data = " , user.toString())
                         intent.putExtra("GoogleLoginData" , user)
                         startActivity(intent)
                     }
@@ -129,7 +128,7 @@ class LoginActivity : AppCompatActivity() {
                     resetForm()
                     startActivity(intent)
                 }else{
-                    Toast.makeText(this , "INVALID CREDENTIAL" , Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this , getString(R.string.invalid_credential) , Toast.LENGTH_SHORT).show()
                 }
             }
     }

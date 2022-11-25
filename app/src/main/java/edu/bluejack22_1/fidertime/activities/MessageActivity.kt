@@ -1,12 +1,9 @@
 package edu.bluejack22_1.fidertime.activities
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -18,6 +15,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.adapters.ChatListRecyclerViewAdapter
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.common.MarginItemDecoration
@@ -82,7 +80,7 @@ class MessageActivity : AppCompatActivity() {
         if(result.resultCode == Activity.RESULT_OK && result.data != null){
             val filePath = result.data!!.data!!
             FirebaseQueries.uploadMedia(filePath, type, this) { imageUrl ->
-                val chat = Chat("", "Sent an $type",
+                val chat = Chat("", getString(R.string.sent_an) + type,
                     type, messageId, arrayListOf(), userId, Timestamp.now(), imageUrl)
                 FirebaseQueries.sendChatMedia(chat) {
                     scrollToBottom()

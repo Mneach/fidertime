@@ -12,6 +12,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.ktx.Firebase
+import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.activities.MessageActivity
 import edu.bluejack22_1.fidertime.adapters.MessageListPagerAdapter
 import edu.bluejack22_1.fidertime.adapters.PinnedMessageListRecyclerViewAdapter
@@ -65,13 +66,13 @@ class MessageFragment : Fragment() {
         TabLayoutMediator(binding.tabLayoutMessageList, binding.pagerMessageList) {tab, position ->
             when (position) {
                 0 -> {
-                    tab.text = "All"
+                    tab.text = getString(R.string.all)
                 }
                 1 -> {
-                    tab.text = "Personal"
+                    tab.text = getString(R.string.personal)
                 }
                 2 -> {
-                    tab.text = "Group"
+                    tab.text = getString(R.string.group)
                 }
             }
         }.attach()

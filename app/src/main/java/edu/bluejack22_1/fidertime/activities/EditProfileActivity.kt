@@ -78,7 +78,7 @@ class EditProfileActivity : AppCompatActivity() {
         var uid = Utilities.getAuthFirebase().uid
 
         if(bio.length > 200){
-            binding.bioInput.error = "Bio must be less than 200 characters"
+            binding.bioInput.error = getString(R.string.bio_length_validation)
             binding.bioInput.requestFocus()
             return
         }
@@ -117,7 +117,7 @@ class EditProfileActivity : AppCompatActivity() {
                     }
                 }
             }else{
-                Toast.makeText(this , "Name has already taken" , Toast.LENGTH_SHORT).show()
+                Toast.makeText(this , getString(R.string.name_unique_validation) , Toast.LENGTH_SHORT).show()
             }
         }
     }

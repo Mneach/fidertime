@@ -13,16 +13,17 @@
         android:layout_height="wrap_content" />
 
     <TextView
+        android:id="@+id/pinned_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Pinned Message"
+        android:text="@string/pinned_message"
         android:textSize="24sp"
         android:padding="10dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_pinned_messages"
         android:layout_width="match_parent"
-        android:layout_height="148dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         tools:listitem="@layout/fragment_pinned_message_item"
         android:padding="10dp" />

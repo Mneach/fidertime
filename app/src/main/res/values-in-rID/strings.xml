@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fidertime</string>
+    <string name="next" translatable="false">Lanjut</string>
+    <string name="previous" translatable="false">Sebelumnya</string>
+    <string name="message">Pesan</string>
+    <string name="contact">Kontak</string>
+    <string name="profile">Profil</string>
+    <string name="register_here">Daftar Disini</string>
+    <string name="new_user">Pengguna Baru</string>
+    <string name="sign_in_with_google">Masuk Dengan Google</string>
+    <string name="already_have_account">Sudah Punya Akun?</string>
+    <string name="login_here">Masuk</string>
+    <string name="register">Daftar</string>
+    <string name="phone_number">nomer handphone</string>
+    <string name="password">password</string>
+    <string name="name">nama</string>
+    <string name="email">email</string>
+    <string name="email_null_validation">email tidak boleh kosong</string>
+    <string name="email_not_valid_validation">email tidak valid</string>
+    <string name="name_null_validation">nama tidak boleh kosong</string>
+    <string name="name_length_validation">nama harus lebih dari 5 karaketr</string>
+    <string name="name_unique_validation">nama telah digunakan</string>
+    <string name="phone_number_null_validation">nomer handphone tidak boleh kosong</string>
+    <string name="phone_number_starts_validation">nomer handphone harus diawali dengan +62</string>
+    <string name="phone_number_unique_validation">nomer handphone telah digunakan</string>
+    <string name="password_null_validation">password tidka boleh kosong</string>
+    <string name="password_number_length_validation">password harus lebih dari 5 karakter</string>
+    <string name="bio_length_validation">bio harus kurang dari 200 karakter</string>
+    <string name="authentication_failed">otentikasi gagal</string>
+    <string name="invalid_credential">Kredensial tidak valid</string>
+    <string name="success_register">berhasil mendaftar</string>
+    <string name="cancel">gagal</string>
+    <string name="edit_profile">ubah profil</string>
+    <string name="edit">ubah</string>
+    <string name="enter_message">masukan pesan</string>
+    <string name="notification">notifikasi</string>
+    <string name="register_your_phone_number">daftarkan nomer handphonemu</string>
+    <string name="search">Cari</string>
+    <string name="pinned_message">pesan yang disematkan</string>
+    <string name="log_out">keluar</string>
+    <string name="sent_an">mengirim sebuah </string>
+    <string name="all">semua</string>
+    <string name="personal">pribadi</string>
+    <string name="group">grup</string>
+</resources>
