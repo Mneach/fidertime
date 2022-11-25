@@ -11,7 +11,7 @@ data class Chat(
     var readBy: ArrayList<String> = arrayListOf(),
     var senderUserId: String = "",
     var timestamp: Timestamp? = null,
-    var imageUrl: String = "",
+    var mediaUrl: String = "",
 ) {
     fun getType(): TypeEnum {
         return when(chatType) {

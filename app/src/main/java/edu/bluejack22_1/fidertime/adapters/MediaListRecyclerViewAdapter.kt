@@ -11,6 +11,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.databinding.FragmentMediaItemBinding
 import edu.bluejack22_1.fidertime.models.Chat
 import edu.bluejack22_1.fidertime.models.Media
@@ -41,7 +42,11 @@ class MediaListRecyclerViewAdapter(query : Query) : FirestoreAdapter<MediaListRe
 
         fun bind(snapshot: DocumentSnapshot) {
             val media = snapshot.toObject<Media>()!!
-            itemBinding.imageViewProfile.load(media.url)
+            itemBinding.imageViewProfile.load(media.url) {
+                crossfade(true)
+                crossfade(300)
+                placeholder(R.drawable.image_placeholder)
+            }
         }
     }
 }

@@ -4,10 +4,7 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import android.widget.ProgressBar
-import android.widget.Toast
 import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
@@ -164,29 +161,32 @@ class FirebaseQueries {
                 }
         }
 
-        fun uploadImage(filePath: Uri, callback: (imageUrl: String) -> Unit) {
-            val userId = Firebase.auth.currentUser?.uid
-            val imageName = Utilities.getImageName(filePath.path.toString())
-            val storageReference = FirebaseStorage.getInstance().getReference("$userId/images/$imageName")
 
-            storageReference.putFile(filePath).addOnSuccessListener { task ->
-                task.storage.downloadUrl.addOnSuccessListener { imageUrl ->
-                    callback.invoke(imageUrl.toString())
+
+        fun uploadMedia(filePath : Uri, type: String, context : Context, callback: (imageUrl : String) -> Unit){
+            val userId = Firebase.auth.currentUser!!.uid
+            val fileName = Utilities.getImageName(filePath.path.toString())
+            val storageReference = FirebaseStorage.getInstance().getReference(userId + "/" + type + "s/" + fileName)
+
+            var progressDialog = ProgressDialog(context)
+            progressDialog.setTitle("Please Wait...")
+            progressDialog.show()
+
+            storageReference.putFile(filePath)
+                .addOnSuccessListener { task ->
+                    task.storage.downloadUrl.addOnSuccessListener { imageUrl ->
+                        progressDialog.dismiss()
+                        Log.d("Image Url = " , imageUrl.toString())
+                        callback.invoke(imageUrl.toString())
+                    }
                 }
-            }
-        }
-
-        fun sendChatText(chat: Chat) {
-            Firebase.firestore.collection("chats").add(chat)
-        }
-
-        fun updateMessageLastChat(chat: Chat) {
-            val messageId = chat.messageId
-            Firebase.firestore.collection("messages").document(messageId).update(mapOf(
-                "lastChatText" to chat.chatText,
-                "lastChatTimestamp" to chat.timestamp,
-                "lastChatType" to chat.chatType
-            ))
+                .addOnFailureListener{
+                    return@addOnFailureListener
+                }
+                .addOnProgressListener {
+                    var currentProgress = (100.0 * it.bytesTransferred) / it.totalByteCount
+                    progressDialog.setMessage("Progress ${currentProgress.toInt()}%")
+                }
         }
 
         fun updateMemberLastVisit(messageId: String, userId: String) {
@@ -195,15 +195,42 @@ class FirebaseQueries {
                 .update("lastVisitTimestamp", Timestamp.now())
         }
 
-        fun addUserMedia(type: String, url: String, messageId: String) {
-            val userId = Firebase.auth.currentUser!!.uid
-            val media = Media("", null, messageId, Timestamp.now(), userId, type, null, url)
-            Firebase.firestore.collection("media").add(media)
+        fun sendChatMedia(chat: Chat, callback: () -> Unit) {
+            val messageId = chat.messageId
+            val media = Media("", null, chat.messageId, Timestamp.now(), chat.senderUserId, chat.chatType, null, chat.mediaUrl)
+            val chatsRef = Firebase.firestore.collection("chats").document()
+            val messagesRef = Firebase.firestore.collection("messages").document(messageId)
+            val mediaRef = Firebase.firestore.collection("media").document()
+
+            Firebase.firestore.runBatch { batch ->
+                batch.set(chatsRef, chat)
+                batch.update(messagesRef, mapOf(
+                    "lastChatText" to chat.chatText,
+                    "lastChatTimestamp" to chat.timestamp,
+                    "lastChatType" to chat.chatType
+                ))
+                batch.set(mediaRef, media)
+            }.addOnSuccessListener {
+                callback.invoke()
+            }
         }
 
-        fun addUserMedia(chat: Chat) {
-            val media = Media("", null, chat.messageId, Timestamp.now(), chat.senderUserId, chat.chatType, null, chat.imageUrl)
-            Firebase.firestore.collection("media").add(media)
+        fun sendChatText(chat: Chat, callback: () -> Unit) {
+            val messageId = chat.messageId
+            val chatsRef = Firebase.firestore.collection("chats").document()
+            val messagesRef = Firebase.firestore.collection("messages").document(messageId)
+
+            Firebase.firestore.runBatch { batch ->
+                batch.set(chatsRef, chat)
+                batch.update(messagesRef, mapOf(
+                    "lastChatText" to chat.chatText,
+                    "lastChatTimestamp" to chat.timestamp,
+                    "lastChatType" to chat.chatType
+                ))
+            }.addOnSuccessListener {
+                callback.invoke()
+            }
         }
+
     }
 }

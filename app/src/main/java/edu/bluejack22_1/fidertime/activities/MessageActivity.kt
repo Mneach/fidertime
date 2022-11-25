@@ -1,10 +1,12 @@
 package edu.bluejack22_1.fidertime.activities
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
-import android.provider.MediaStore
+import android.util.Log
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -29,6 +31,7 @@ class MessageActivity : AppCompatActivity() {
     private lateinit var messageId: String
     private lateinit var adapter: ChatListRecyclerViewAdapter
     private lateinit var recyclerView: RecyclerView
+    private lateinit var type: String
     private val userId = Firebase.auth.currentUser!!.uid
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,29 +56,37 @@ class MessageActivity : AppCompatActivity() {
             toggleAttachmentLayout(attachmentLayout)
         }
 
-        val galleryButton = binding.buttonGallery
-        galleryButton.setOnClickListener {
+        val imageButton = binding.buttonImage
+        imageButton.setOnClickListener {
             attachmentLayout.visibility = View.GONE
-            selectImage()
+            selectMedia("image")
+        }
+
+        val videoButton = binding.buttonVideo
+        videoButton.setOnClickListener {
+            attachmentLayout.visibility = View.GONE
+            selectMedia("video")
         }
     }
 
-    private fun selectImage(){
+    private fun selectMedia(type: String) {
+        this.type = type
         val intent = Intent()
-        intent.type = "image/*"
+        intent.type = "$type/*"
         intent.action = Intent.ACTION_GET_CONTENT
 
-        chooseImageFromGallery.launch(intent)
+        chooseMediaFromGallery.launch(intent)
     }
 
-    private var chooseImageFromGallery = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+    private var chooseMediaFromGallery = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if(result.resultCode == Activity.RESULT_OK && result.data != null){
             val filePath = result.data!!.data!!
-            FirebaseQueries.uploadImage(filePath) { imageUrl ->
-                val chat = Chat("", "Sent an image", "image", messageId, arrayListOf(), userId, Timestamp.now(), imageUrl)
-                FirebaseQueries.sendChatText(chat)
-                FirebaseQueries.updateMessageLastChat(chat)
-                FirebaseQueries.addUserMedia(chat)
+            FirebaseQueries.uploadMedia(filePath, type, this) { imageUrl ->
+                val chat = Chat("", "Sent an $type",
+                    type, messageId, arrayListOf(), userId, Timestamp.now(), imageUrl)
+                FirebaseQueries.sendChatMedia(chat) {
+                    scrollToBottom()
+                }
             }
         }
     }
@@ -94,13 +105,25 @@ class MessageActivity : AppCompatActivity() {
 
         sendButton.setOnClickListener {
             if (editTextChat.text.isNotEmpty()) {
-                val chat = Chat("", editTextChat.text.toString(), "text", messageId, arrayListOf(), userId, Timestamp.now())
-                FirebaseQueries.sendChatText(chat)
-                FirebaseQueries.updateMessageLastChat(chat)
+                val chat = Chat(
+                    "",
+                    editTextChat.text.toString(),
+                    "text",
+                    messageId,
+                    arrayListOf(),
+                    userId,
+                    Timestamp.now()
+                )
                 editTextChat.text.clear()
-                recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
+                FirebaseQueries.sendChatText(chat) {
+                    scrollToBottom()
+                }
             }
         }
+    }
+
+    private fun scrollToBottom() {
+        recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
     }
 
     private fun initializeRecyclerView() {

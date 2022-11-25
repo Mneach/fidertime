@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import coil.load
+import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.common.FirebaseQueries.Companion.updateUserData
 import edu.bluejack22_1.fidertime.common.Utilities
@@ -123,7 +124,11 @@ class EditProfileActivity : AppCompatActivity() {
 
     private fun attachUserData(user : User){
         if(user.profileImageUrl.isNotEmpty()){
-            binding.imageViewProfile.load(user.profileImageUrl)
+            binding.imageViewProfile.load(user.profileImageUrl) {
+                crossfade(true)
+                crossfade(300)
+                placeholder(R.drawable.image_placeholder)
+            }
         }
         binding.emailInput.setText(user.email)
         binding.phoneNumberInput.setText(user.phoneNumber)
