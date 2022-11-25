@@ -16,6 +16,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.adapters.ChatListRecyclerViewAdapter
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.common.MarginItemDecoration
@@ -72,7 +73,7 @@ class MessageActivity : AppCompatActivity() {
         if(result.resultCode == Activity.RESULT_OK && result.data != null){
             val filePath = result.data!!.data!!
             FirebaseQueries.uploadImage(filePath) { imageUrl ->
-                val chat = Chat("", "Sent an image", "image", messageId, arrayListOf(), userId, Timestamp.now(), imageUrl)
+                val chat = Chat("", getString(R.string.sent_an_image), "image", messageId, arrayListOf(), userId, Timestamp.now(), imageUrl)
                 FirebaseQueries.sendChatText(chat)
                 FirebaseQueries.updateMessageLastChat(chat)
                 FirebaseQueries.addUserMedia(chat)
@@ -98,7 +99,7 @@ class MessageActivity : AppCompatActivity() {
                 FirebaseQueries.sendChatText(chat)
                 FirebaseQueries.updateMessageLastChat(chat)
                 editTextChat.text.clear()
-                recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
+                recyclerView.scrollToPosition(adapter.itemCount - 1)
             }
         }
     }

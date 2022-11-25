@@ -23,7 +23,6 @@ class ProfileMediaListPagerAdapter (fragmentManager: FragmentManager, lifecycle:
 
         val db = Firebase.firestore
         val userId = Utilities.getAuthFirebase().currentUser!!.uid
-        Log.d("User id = " , userId)
 
         return when (position) {
             0 -> {

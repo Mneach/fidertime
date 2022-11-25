@@ -8,6 +8,7 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.databinding.ActivityRegisterBinding
 import edu.bluejack22_1.fidertime.databinding.ActivityRegisterPhoneNumberBinding
@@ -29,11 +30,11 @@ class RegisterPhoneNumberActivity : AppCompatActivity() {
 
             // PHONE NUMBER VALIDATION
             if(phoneNumber.isEmpty()){
-                binding.phoneNumber.error = "Phone Number cannot be null"
+                binding.phoneNumber.error = getString(R.string.phone_number_null_validation)
                 binding.phoneNumber.requestFocus()
                 return@setOnClickListener
             }else if(!phoneNumber.startsWith("+62")){
-                binding.phoneNumber.error = "Phone Number must starts with +62"
+                binding.phoneNumber.error = getString(R.string.phone_number_starts_validation)
                 binding.phoneNumber.requestFocus()
                 return@setOnClickListener
             }
@@ -59,7 +60,7 @@ class RegisterPhoneNumberActivity : AppCompatActivity() {
                         Toast.makeText(this , e.toString() , Toast.LENGTH_SHORT).show()
                     }
             }else{
-                Toast.makeText(this , "Phone number has already taken" , Toast.LENGTH_SHORT).show()
+                Toast.makeText(this , getString(R.string.phone_number_unique_validation) , Toast.LENGTH_SHORT).show()
             }
         }
     }

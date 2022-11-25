@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:backgroundTint="@color/ascent_color"
-                android:text="Sign in with google"
+                android:text="@string/sign_in_with_google"
                 android:drawableLeft="@drawable/common_google_signin_btn_icon_dark"
 
                 />
@@ -89,7 +89,7 @@
                 android:layout_marginTop="30dp"
                 android:textColor="@color/white"
                 android:backgroundTint="@color/white"
-                android:text="New User?"
+                android:text="@string/new_user"
                 android:textAlignment="center" />
 
             <TextView
@@ -97,7 +97,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
-                android:text="Register Here"
+                android:text="@string/register_here"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textStyle="bold" />

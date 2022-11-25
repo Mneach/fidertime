@@ -2,6 +2,7 @@ package edu.bluejack22_1.fidertime.common
 
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.widget.ProgressBar
@@ -16,6 +17,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import edu.bluejack22_1.fidertime.activities.LoginActivity
 import edu.bluejack22_1.fidertime.models.*
 
 class FirebaseQueries {
@@ -52,6 +54,25 @@ class FirebaseQueries {
             }
         }
 
+        fun getMessageByUserAndMessageType(userId : String , messageType : String , callback: (messages : ArrayList<Message>) -> Unit){
+            val messageRef = Firebase.firestore.collection("messages")
+            messageRef.whereArrayContains("members" , userId).whereEqualTo("messageType" , messageType)
+                .get().addOnSuccessListener { value ->
+                    var messages = ArrayList<Message>()
+                    if (value != null && !value.isEmpty) {
+                        for(doc in value){
+                            var message = doc.toObject<Message>()
+                            message.id = doc.id
+                            messages.add(message)
+                        }
+                        callback.invoke(messages)
+                    }else{
+                        // return object with empty value
+                        callback.invoke(messages)
+                    }
+                }
+        }
+
         fun getUserByPhoneNumber(phoneNumber: String , callback : (user : ArrayList<User>) -> Unit){
             val usersRef = Firebase.firestore.collection("users")
             usersRef.whereEqualTo("phoneNumber", phoneNumber)
@@ -76,6 +97,26 @@ class FirebaseQueries {
                     val user = snapshot.toObject<User>()
                     user!!.id = snapshot.id
                     callback.invoke(user)
+                }
+            }
+        }
+
+        fun subscribeToContacts(callback: (user: ArrayList<User>) -> Unit) {
+            val userRef = Firebase.firestore.collection("users").orderBy("name" , Direction.ASCENDING)
+            userRef.addSnapshotListener {snapshot, e ->
+                if (e != null) {
+                    return@addSnapshotListener
+                }
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val users = ArrayList<User>()
+                    for(doc in snapshot){
+                        if(doc.id != Utilities.getAuthFirebase().uid){
+                            val user = doc.toObject<User>()
+                            user.id = doc.id
+                            users.add(user)
+                        }
+                    }
+                    callback.invoke(users)
                 }
             }
         }
@@ -204,6 +245,14 @@ class FirebaseQueries {
         fun addUserMedia(chat: Chat) {
             val media = Media("", null, chat.messageId, Timestamp.now(), chat.senderUserId, chat.chatType, null, chat.imageUrl)
             Firebase.firestore.collection("media").add(media)
+        }
+
+        fun addMessage(messages : Message , callback: (messageId : String) -> Unit){
+            var messageRef = Firebase.firestore.collection("messages")
+            messageRef.add(messages)
+                .addOnSuccessListener { value ->
+                    callback(value.id)
+                }
         }
     }
 }

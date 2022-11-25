@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="30dp"
     android:background="@color/primary_color"
-    tools:context=".activities.LoginActivity">
+    tools:context=".activities.RegisterActivity">
 
     <!--<ImageView
         android:layout_width="200dp"
@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:backgroundTint="@color/black"
-                android:text="Register"
+                android:text="@string/register"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="24sp"
@@ -45,7 +45,7 @@
                 android:id="@+id/email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Email"
+                android:hint="@string/email"
                 android:textColor="@color/white"
                 android:textColorHint="@color/hint_color"
                 android:paddingBottom="20dp"
@@ -57,7 +57,7 @@
                 android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Name"
+                android:hint="@string/name"
                 android:textColor="@color/white"
                 android:textColorHint="@color/hint_color"
                 android:paddingBottom="20dp"
@@ -69,7 +69,7 @@
                 android:id="@+id/phoneNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Phone Number"
+                android:hint="@string/phone_number"
                 android:textColor="@color/white"
                 android:textColorHint="@color/hint_color"
                 android:paddingBottom="20dp"
@@ -81,7 +81,7 @@
                 android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Password"
+                android:hint="@string/password"
                 android:textColor="@color/white"
                 android:textColorHint="@color/hint_color"
                 android:paddingBottom="20dp"
@@ -94,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:backgroundTint="@color/ascent_color"
-                android:text="Register" />
+                android:text="@string/register" />
 
 
             <TextView
@@ -103,7 +103,7 @@
                 android:layout_marginTop="30dp"
                 android:textColor="@color/white"
                 android:backgroundTint="@color/white"
-                android:text="Already Have Account?"
+                android:text="@string/already_have_account"
                 android:textAlignment="center" />
 
             <TextView
@@ -111,7 +111,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
-                android:text="Login Here"
+                android:text="@string/login_here"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textStyle="bold" />

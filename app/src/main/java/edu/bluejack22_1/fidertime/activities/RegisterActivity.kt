@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.databinding.ActivityRegisterBinding
 import edu.bluejack22_1.fidertime.models.User
 
@@ -39,43 +40,43 @@ class RegisterActivity : AppCompatActivity() {
 
             // EMAIL VALIDATION
             if(email.isEmpty()){
-                binding.email.error = "Email cannot be null"
+                binding.email.error = getString(R.string.email_null_validation)
                 binding.email.requestFocus()
                 return@setOnClickListener
             }else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-                binding.email.error = "Email not valid"
+                binding.email.error = getString(R.string.email_not_valid_validation)
                 binding.email.requestFocus()
                 return@setOnClickListener
             }
 
             // NAMEf VALIDATION
             if(name.isEmpty()){
-                binding.name.error = "Name cannot be null"
+                binding.name.error = getString(R.string.name_null_validation)
                 binding.name.requestFocus()
                 return@setOnClickListener
             }else if(name.length < 5){
-                binding.name.error = "Name must be more than 5 characters"
+                binding.name.error = getString(R.string.name_length_validation)
                 binding.name.requestFocus()
                 return@setOnClickListener
             }
 
             // PHONE NUMBER VALIDATION
             if(phoneNumber.isEmpty()){
-                binding.phoneNumber.error = "Phone Number cannot be null"
+                binding.phoneNumber.error = getString(R.string.phone_number_null_validation)
                 binding.phoneNumber.requestFocus()
                 return@setOnClickListener
             }else if(!phoneNumber.startsWith("+62")){
-                binding.phoneNumber.error = "Phone Number must starts with +62"
+                binding.phoneNumber.error = getString(R.string.phone_number_starts_validation)
                 binding.phoneNumber.requestFocus()
                 return@setOnClickListener
             }
             // Password Validation
             if(password.isEmpty()){
-                binding.password.error = "Password cannot be null"
+                binding.password.error = getString(R.string.password_null_validation)
                 binding.password.requestFocus()
                 return@setOnClickListener
             }else if(password.length < 5){
-                binding.password.error = "Password must be more than 5 characters"
+                binding.password.error = getString(R.string.password_number_length_validation)
                 binding.password.requestFocus()
                 return@setOnClickListener
             }
@@ -91,11 +92,9 @@ class RegisterActivity : AppCompatActivity() {
             .addOnSuccessListener{ result ->
                 var checkName = false
                 var checkPhoneNumber = false
-                Log.d("Test" , "test1234")
                 for(doc in result){
                     val user = doc.toObject<User>()
                     user.id = doc.id
-                    Log.d("Check = " , user.phoneNumber + " | " + phoneNumber)
                     if(user.phoneNumber == phoneNumber){
                         checkPhoneNumber = true
                     }else if(user.name == name){
@@ -104,9 +103,9 @@ class RegisterActivity : AppCompatActivity() {
                 }
 
                 if(checkPhoneNumber){
-                    Toast.makeText(this , "Phone Number has already taken" , Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this , getString(R.string.phone_number_unique_validation) , Toast.LENGTH_SHORT).show()
                 }else if(checkName){
-                    Toast.makeText(this , "Name has already taken" , Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this , getString(R.string.name_unique_validation) , Toast.LENGTH_SHORT).show()
                 }else{
                     registerUser(email , name , phoneNumber , password)
                 }
@@ -122,7 +121,6 @@ class RegisterActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-                    Log.d("USER DATA", auth.currentUser.toString())
                     val id = auth.currentUser?.uid
 
                     val data = hashMapOf(
@@ -134,7 +132,7 @@ class RegisterActivity : AppCompatActivity() {
                     db.collection("users").document(id.toString())
                         .set(data)
                         .addOnSuccessListener { documentReference ->
-                            Toast.makeText(this , "Success Register" , Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this , getString(R.string.register) , Toast.LENGTH_SHORT).show()
                             val intent = Intent(this , LoginActivity::class.java)
                             startActivity(intent)
                         }
@@ -143,9 +141,7 @@ class RegisterActivity : AppCompatActivity() {
                         }
                 } else {
                     // If sign in fails, display a message to the user.
-                    Log.w("FAILED", "signInWithEmail:failure", task.exception)
-                    Toast.makeText(baseContext, "Authentication failed.",
-                        Toast.LENGTH_SHORT).show()
+                    Toast.makeText(baseContext, getString(R.string.authentication_failed),Toast.LENGTH_SHORT).show()
                 }
             }
     }

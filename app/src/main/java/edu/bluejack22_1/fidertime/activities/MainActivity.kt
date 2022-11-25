@@ -1,14 +1,11 @@
 package edu.bluejack22_1.fidertime.activities
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import edu.bluejack22_1.fidertime.R
-import edu.bluejack22_1.fidertime.common.Utilities
 import edu.bluejack22_1.fidertime.databinding.ActivityMainBinding
-import edu.bluejack22_1.fidertime.fragments.ContactFragment
+import edu.bluejack22_1.fidertime.fragments.ContactListFragment
 import edu.bluejack22_1.fidertime.fragments.MessageFragment
 import edu.bluejack22_1.fidertime.fragments.ProfileFragment
 import edu.bluejack22_1.fidertime.fragments.StatusFragment
@@ -30,13 +27,8 @@ class MainActivity : AppCompatActivity() {
             }
             "contact" -> {
                 binding.bottomNavigationView.selectedItemId = R.id.contact
-                replaceFragment(ContactFragment())
-            }
-            "status" -> {
-                binding.bottomNavigationView.selectedItemId = R.id.status
-                replaceFragment(StatusFragment())
-            }
-            "message" -> {
+                replaceFragment(ContactListFragment())
+            }"message" -> {
                 binding.bottomNavigationView.selectedItemId = R.id.message
                 replaceFragment(MessageFragment())
             }
@@ -53,8 +45,7 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.profile -> replaceFragment(ProfileFragment())
-                R.id.contact -> replaceFragment(ContactFragment())
-                R.id.status -> replaceFragment(StatusFragment())
+                R.id.contact -> replaceFragment(ContactListFragment())
                 R.id.message -> replaceFragment(MessageFragment())
                 else -> {
 
