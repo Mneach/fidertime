@@ -52,6 +52,7 @@ class ProfileFragment : Fragment() {
             if(GoogleSignIn.getLastSignedInAccount(mainActivity) != null){
                 // SIGN OUT IF USER LOGIN WITH GOOGLE
                 Utilities.getGoogleSignInClient(mainActivity).signOut().addOnCompleteListener{
+                    Utilities.getAuthFirebase().signOut()
                     startActivity(intent)
                 }
             }else{
