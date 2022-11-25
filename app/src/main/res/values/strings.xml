@@ -49,6 +49,10 @@
 
     <string name="invalid_credential">INVALID CREDENTIAL</string>
 
+   <!--  PROGRESS  -->
+    <string name="please_wait">Please Wait...</string>
+    <string name="progress">Progress...</string>
+
    <!-- SUCCESS  -->
     <string name="success_register">Success Register</string>
 

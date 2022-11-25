@@ -48,7 +48,6 @@ class MessageFragment : Fragment() {
     }
 
     private fun attachRecyclerViewAdapter(userMessages: ArrayList<UserMessage>) {
-        Log.d("recycler", "masuk")
         val adapter = PinnedMessageListRecyclerViewAdapter(userMessages)
         adapter.onItemClick = {
             val intent = Intent(context, MessageActivity::class.java)
@@ -61,7 +60,6 @@ class MessageFragment : Fragment() {
     private fun initializeTabs() {
         val messageListPagerAdapter = MessageListPagerAdapter(parentFragmentManager, lifecycle)
         binding.pagerMessageList.adapter = messageListPagerAdapter
-        Log.d("tabs", "masuk")
 
         TabLayoutMediator(binding.tabLayoutMessageList, binding.pagerMessageList) {tab, position ->
             when (position) {

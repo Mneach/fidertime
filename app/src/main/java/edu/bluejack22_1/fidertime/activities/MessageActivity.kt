@@ -1,6 +1,7 @@
 package edu.bluejack22_1.fidertime.activities
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -79,6 +80,10 @@ class MessageActivity : AppCompatActivity() {
     private var chooseMediaFromGallery = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if(result.resultCode == Activity.RESULT_OK && result.data != null){
             val filePath = result.data!!.data!!
+            var progressDialog = ProgressDialog(this)
+            progressDialog.setTitle(getString(R.string.please_wait))
+            progressDialog.show()
+
             FirebaseQueries.uploadMedia(filePath, type, this) { imageUrl ->
                 val chat = Chat("", getString(R.string.sent_an) + type,
                     type, messageId, arrayListOf(), userId, Timestamp.now(), imageUrl)
@@ -168,7 +173,11 @@ class MessageActivity : AppCompatActivity() {
     private fun setNameAndProfile(user: User) {
         binding.toolbarMessage.textViewTitle.text = user.name
         binding.toolbarMessage.textViewSubtitle.text = user.status
-        binding.toolbarMessage.imageViewProfile.load(user.profileImageUrl)
+        if(user.profileImageUrl != ""){
+            binding.toolbarMessage.imageViewProfile.load(user.profileImageUrl)
+        }else{
+            binding.toolbarMessage.imageViewProfile.setBackgroundResource(R.drawable.default_avatar)
+        }
         setActionBar()
     }
 
