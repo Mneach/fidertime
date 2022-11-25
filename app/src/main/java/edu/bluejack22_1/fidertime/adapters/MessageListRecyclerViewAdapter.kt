@@ -14,6 +14,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.common.RelativeDateAdapter
 import edu.bluejack22_1.fidertime.databinding.FragmentMessageItemBinding
@@ -100,7 +101,12 @@ class MessageListRecyclerViewAdapter(query: Query) : FirestoreAdapter<MessageLis
 
         private fun setNameAndProfile(user: User) {
             itemBinding.textViewName.text = user.name
-            itemBinding.imageViewProfile.load(user.profileImageUrl)
+            if(user.profileImageUrl != ""){
+                itemBinding.imageViewProfile.load(user.profileImageUrl)
+            }else{
+                itemBinding.imageViewProfile.setBackgroundResource(R.drawable.default_avatar)
+            }
+
         }
     }
 
