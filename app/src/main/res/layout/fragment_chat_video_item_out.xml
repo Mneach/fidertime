@@ -44,7 +44,7 @@
             <VideoView
                 android:id="@+id/video_view_chat"
                 android:layout_width="200dp"
-                android:layout_height="wrap_content"
+                android:layout_height="200dp"
                 />
 
         </androidx.cardview.widget.CardView>

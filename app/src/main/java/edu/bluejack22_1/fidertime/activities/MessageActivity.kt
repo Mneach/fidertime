@@ -80,7 +80,7 @@ class MessageActivity : AppCompatActivity() {
         if(result.resultCode == Activity.RESULT_OK && result.data != null){
             val filePath = result.data!!.data!!
             FirebaseQueries.uploadMedia(filePath, type, this) { imageUrl ->
-                val chat = Chat("", getString(R.string.sent_an) + type,
+                val chat = Chat("", getString(R.string.sent_an) + " " + type,
                     type, messageId, arrayListOf(), userId, Timestamp.now(), imageUrl)
                 FirebaseQueries.sendChatMedia(chat) {
                     scrollToBottom()

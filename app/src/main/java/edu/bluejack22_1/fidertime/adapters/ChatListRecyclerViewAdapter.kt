@@ -5,6 +5,7 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.MediaController
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.google.firebase.auth.ktx.auth
@@ -105,7 +106,7 @@ class ChatListRecyclerViewAdapter(query: Query) : FirestoreAdapter<ChatListRecyc
         if (getSnapshot(position)?.get("senderUserId") == userId && getChatType(position) == TypeEnum.TEXT) {
             return CHAT_OUT
         }
-        if (getSnapshot(position)?.get("senderUserId") != userId && getChatType(position) == TypeEnum.IMAGE) {
+        if (getSnapshot(position)?.get("senderUserId") != userId && getChatType(position) == TypeEnum.VIDEO) {
             return CHAT_IN_VIDEO
         }
         if (getSnapshot(position)?.get("senderUserId") != userId && getChatType(position) == TypeEnum.IMAGE) {
@@ -199,6 +200,11 @@ class ChatListRecyclerViewAdapter(query: Query) : FirestoreAdapter<ChatListRecyc
             chat.id = snapshot.id
             val uri = Uri.parse(chat.mediaUrl)
             binding.videoViewChat.setVideoURI(uri)
+
+            val mediaController = MediaController(itemView.context)
+            binding.videoViewChat.setMediaController(mediaController)
+            binding.videoViewChat.requestFocus()
+
             binding.textViewTimestamp.text = chat.timestamp?.toDate()
                 ?.let { RelativeDateAdapter(it).getHourMinuteFormat() }
             FirebaseQueries.subscribeToUser(chat.senderUserId) {
@@ -215,6 +221,11 @@ class ChatListRecyclerViewAdapter(query: Query) : FirestoreAdapter<ChatListRecyc
             val chat = snapshot.toObject<Chat>()!!
             val uri = Uri.parse(chat.mediaUrl)
             binding.videoViewChat.setVideoURI(uri)
+
+            val mediaController = MediaController(itemView.context)
+            binding.videoViewChat.setMediaController(mediaController)
+            binding.videoViewChat.requestFocus()
+
             binding.textViewReadBy.text = "Read ${chat.readBy.size.toString()}"
             binding.textViewTimestamp.text = chat.timestamp?.toDate()
                 ?.let { RelativeDateAdapter(it).getHourMinuteFormat() }
