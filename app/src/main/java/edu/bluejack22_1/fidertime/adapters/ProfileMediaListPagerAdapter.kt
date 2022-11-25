@@ -27,7 +27,7 @@ class ProfileMediaListPagerAdapter (fragmentManager: FragmentManager, lifecycle:
         return when (position) {
             0 -> {
                 MediaListFragment(
-                    db.collection("media").whereEqualTo("senderUserId", userId).whereEqualTo("type" , "image").orderBy("timestamp", Query.Direction.DESCENDING)
+                    db.collection("media").whereEqualTo("senderUserId", userId).whereIn("type" , listOf("image" , "video")).orderBy("timestamp", Query.Direction.DESCENDING)
                 )
             }
             1 -> {
