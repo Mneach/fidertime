@@ -1,6 +1,8 @@
 package edu.bluejack22_1.fidertime.adapters
 
 import FirestoreAdapter
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.media.Image
 import android.net.Uri
 import android.util.Log
@@ -10,6 +12,8 @@ import android.view.ViewGroup
 import android.widget.MediaController
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
@@ -80,11 +84,20 @@ class MediaListRecyclerViewAdapter(query : Query) : FirestoreAdapter<MediaListRe
         override fun bind(snapshot: DocumentSnapshot) {
             val media = snapshot.toObject<Media>()!!
             val uri = Uri.parse(media.url)
-            itemBinding.videoViewProfile.setVideoURI(uri)
+            Glide.with(itemView.context)
+                .asBitmap()
+                .load(uri)
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
+                    ) {
+                        itemBinding.imageViewMedia.setImageBitmap(resource)
+                    }
 
-            val mediaController = MediaController(itemView.context)
-            itemBinding.videoViewProfile.setMediaController(mediaController)
-            itemBinding.videoViewProfile.requestFocus()
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                    }
+                })
 
         }
     }

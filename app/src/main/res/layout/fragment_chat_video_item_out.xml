@@ -41,12 +41,14 @@
             android:layout_gravity="end"
             android:layout_marginStart="8dp">
 
-            <VideoView
-                android:id="@+id/video_view_chat"
+            <ImageView
+                android:id="@+id/image_view_chat"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
+                android:src="@drawable/image_placeholder"
                 />
-
         </androidx.cardview.widget.CardView>
 
     </LinearLayout>

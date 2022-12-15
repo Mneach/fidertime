@@ -46,7 +46,16 @@ class MessageListRecyclerViewAdapter(query: Query) : FirestoreAdapter<MessageLis
             val messageItem = snapshot!!.toObject<Message>()!!
             messageItem.id = snapshot.id
             itemBinding.textViewUnreadChatCount.visibility = View.GONE
-            itemBinding.textViewLastChat.text = messageItem.lastChatText
+            if (messageItem.lastChatType == "text") {
+                itemBinding.textViewLastChat.text = messageItem.lastChatText
+            } else {
+                if (messageItem.lastChatType == "image") {
+                    itemBinding.textViewLastChat.text = "Sent an image"
+                }
+                else {
+                    itemBinding.textViewLastChat.text = "Sent a " + messageItem.lastChatType
+                }
+            }
             itemBinding.textViewTime.text = messageItem.lastChatTimestamp?.toDate()
                 ?.let { RelativeDateAdapter(it).getRelativeString() }
             setNameAndProfile(messageItem)
@@ -73,6 +82,18 @@ class MessageListRecyclerViewAdapter(query: Query) : FirestoreAdapter<MessageLis
             if (userLastVisitTimestamp != null) {
                 val unreadChatCountQuery = db.collection("chats").whereEqualTo("messageId", messageId)
                     .whereGreaterThanOrEqualTo("timestamp", userLastVisitTimestamp).count()
+                unreadChatCountQuery.get(AggregateSource.SERVER).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val snapshot = task.result
+                        if (snapshot.count > 0) {
+                            itemBinding.textViewUnreadChatCount.visibility = View.VISIBLE
+                            itemBinding.textViewUnreadChatCount.text = snapshot.count.toString()
+                        }
+                    }
+                }
+            }
+            else {
+                val unreadChatCountQuery = db.collection("chats").whereEqualTo("messageId", messageId).count()
                 unreadChatCountQuery.get(AggregateSource.SERVER).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val snapshot = task.result

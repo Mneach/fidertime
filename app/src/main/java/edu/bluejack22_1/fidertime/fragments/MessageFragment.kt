@@ -1,5 +1,6 @@
 package edu.bluejack22_1.fidertime.fragments
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,9 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.activities.MessageActivity
@@ -21,17 +25,17 @@ import edu.bluejack22_1.fidertime.common.MarginItemDecoration
 import edu.bluejack22_1.fidertime.databinding.FragmentMessageBinding
 import edu.bluejack22_1.fidertime.models.UserMessage
 
-class MessageFragment : Fragment() {
+class MessageFragment() : Fragment() {
 
     private var _binding : FragmentMessageBinding? = null
     private val binding get() = _binding!!
-
-    private lateinit var userMessagesListener: ListenerRegistration
+    private lateinit var adapter: PinnedMessageListRecyclerViewAdapter
+    private lateinit var recyclerViewMessages: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentMessageBinding.inflate(inflater, container, false)
         initializeTabs()
         initializeRecyclerView()
@@ -39,22 +43,23 @@ class MessageFragment : Fragment() {
     }
 
     private fun initializeRecyclerView() {
-        binding.recyclerViewPinnedMessages.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        binding.recyclerViewPinnedMessages.addItemDecoration(MarginItemDecoration(40, LinearLayoutManager.HORIZONTAL))
-        val userId = Firebase.auth.currentUser?.uid
-        userMessagesListener = FirebaseQueries.subscribeToUserPinnedMessages(userId!!) {
-            attachRecyclerViewAdapter(it)
-        }
+        recyclerViewMessages =binding.recyclerViewPinnedMessages
+        recyclerViewMessages.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        recyclerViewMessages.addItemDecoration(MarginItemDecoration(40, LinearLayoutManager.HORIZONTAL))
+        val userId = Firebase.auth.currentUser!!.uid
+        val query = Firebase.firestore.collection("users").document(userId).collection("messages")
+            .whereEqualTo("pinned", true)
+        attachRecyclerViewAdapter(query)
     }
 
-    private fun attachRecyclerViewAdapter(userMessages: ArrayList<UserMessage>) {
-        val adapter = PinnedMessageListRecyclerViewAdapter(userMessages)
+    private fun attachRecyclerViewAdapter(query: Query) {
+        adapter = PinnedMessageListRecyclerViewAdapter(query)
         adapter.onItemClick = {
             val intent = Intent(context, MessageActivity::class.java)
             intent.putExtra("messageId", it)
             startActivity(intent)
         }
-        binding.recyclerViewPinnedMessages.adapter = adapter
+        recyclerViewMessages.adapter = adapter
     }
 
     private fun initializeTabs() {
@@ -76,8 +81,21 @@ class MessageFragment : Fragment() {
         }.attach()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        userMessagesListener.remove()
+    override fun onStart() {
+        super.onStart()
+        recyclerViewMessages.recycledViewPool.clear()
+        adapter.startListening()
+        recyclerViewMessages.recycledViewPool.clear()
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        adapter.stopListening()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

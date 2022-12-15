@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
@@ -27,7 +28,6 @@ class MediaListFragment (
     private var _binding: FragmentMediaListBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerViewMessages: RecyclerView
-    private lateinit var userMediaListener : ListenerRegistration
     private lateinit var adapter : MediaListRecyclerViewAdapter;
 
     override fun onCreateView(

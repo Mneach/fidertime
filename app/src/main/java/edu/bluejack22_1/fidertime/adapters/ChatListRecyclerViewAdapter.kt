@@ -1,13 +1,16 @@
 package edu.bluejack22_1.fidertime.adapters
 
 import FirestoreAdapter
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.MediaController
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
@@ -26,7 +29,7 @@ import edu.bluejack22_1.fidertime.databinding.FragmentChatVideoItemOutBinding
 import edu.bluejack22_1.fidertime.models.Chat
 
 
-class ChatListRecyclerViewAdapter(query: Query) : FirestoreAdapter<ChatListRecyclerViewAdapter.ViewHolder>(query) {
+class ChatListRecyclerViewAdapter(query: Query, private val messageType: String) : FirestoreAdapter<ChatListRecyclerViewAdapter.ViewHolder>(query) {
 
     private val userId = Firebase.auth.currentUser!!.uid
     private val CHAT_IN = 1
@@ -39,7 +42,7 @@ class ChatListRecyclerViewAdapter(query: Query) : FirestoreAdapter<ChatListRecyc
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         if (viewType == CHAT_OUT) {
             val binding = FragmentChatItemOutBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
-            return ChatOutViewHolder(binding, binding.root)
+            return ChatOutViewHolder(binding, binding.root, messageType)
         }
         if (viewType == CHAT_IN) {
             val binding = FragmentChatItemInBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
@@ -47,7 +50,7 @@ class ChatListRecyclerViewAdapter(query: Query) : FirestoreAdapter<ChatListRecyc
         }
         if (viewType == CHAT_OUT_IMAGE) {
             val binding = FragmentChatImageItemOutBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
-            return ChatImageOutViewHolder(binding, binding.root)
+            return ChatImageOutViewHolder(binding, binding.root, messageType)
         }
         if (viewType == CHAT_IN_IMAGE) {
             val binding = FragmentChatImageItemInBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
@@ -55,7 +58,7 @@ class ChatListRecyclerViewAdapter(query: Query) : FirestoreAdapter<ChatListRecyc
         }
         if (viewType == CHAT_OUT_VIDEO) {
             val binding = FragmentChatVideoItemOutBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
-            return ChatVideoOutViewHolder(binding, binding.root)
+            return ChatVideoOutViewHolder(binding, binding.root, messageType)
         }
         if (viewType == CHAT_IN_VIDEO) {
             val binding = FragmentChatVideoItemInBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
@@ -133,22 +136,37 @@ class ChatListRecyclerViewAdapter(query: Query) : FirestoreAdapter<ChatListRecyc
                 ?.let { RelativeDateAdapter(it).getHourMinuteFormat() }
             FirebaseQueries.subscribeToUser(chat.senderUserId) {
                 binding.textViewName.text = it.name
-                binding.imageViewProfile.load(it.profileImageUrl)
+                if(it.profileImageUrl != ""){
+                    binding.imageViewProfile.load(it.profileImageUrl)
+                }else{
+                    binding.imageViewProfile.setBackgroundResource(R.drawable.default_avatar)
+                }
             }
         }
     }
 
-    class ChatOutViewHolder(private val binding: FragmentChatItemOutBinding, itemView: View) : ViewHolder(
+    class ChatOutViewHolder(private val binding: FragmentChatItemOutBinding, itemView: View, private val messageType: String) : ViewHolder(
         itemView
     ) {
         override fun bind(snapshot: DocumentSnapshot) {
             val chat = snapshot.toObject<Chat>()!!
             binding.textViewChat.text = chat.chatText
-            binding.textViewReadBy.text = "Read ${chat.readBy.size.toString()}"
+            FirebaseQueries.subscribeToMemberLastVisit(chat.messageId, chat.timestamp!!) { totalReadBy ->
+                if (totalReadBy == 0) {
+                    binding.textViewReadBy.text = ""
+                }
+                else {
+                    binding.textViewReadBy.text = "Read By $totalReadBy"
+                }
+            }
             binding.textViewTimestamp.text = chat.timestamp?.toDate()
                 ?.let { RelativeDateAdapter(it).getHourMinuteFormat() }
             FirebaseQueries.subscribeToUser(chat.senderUserId) {
-                binding.imageViewProfile.load(it.profileImageUrl)
+                if(it.profileImageUrl != ""){
+                    binding.imageViewProfile.load(it.profileImageUrl)
+                }else{
+                    binding.imageViewProfile.setBackgroundResource(R.drawable.default_avatar)
+                }
             }
         }
     }
@@ -168,12 +186,16 @@ class ChatListRecyclerViewAdapter(query: Query) : FirestoreAdapter<ChatListRecyc
                 ?.let { RelativeDateAdapter(it).getHourMinuteFormat() }
             FirebaseQueries.subscribeToUser(chat.senderUserId) {
                 binding.textViewName.text = it.name
-                binding.imageViewProfile.load(it.profileImageUrl)
+                if(it.profileImageUrl != ""){
+                    binding.imageViewProfile.load(it.profileImageUrl)
+                }else{
+                    binding.imageViewProfile.setBackgroundResource(R.drawable.default_avatar)
+                }
             }
         }
     }
 
-    class ChatImageOutViewHolder(private val binding: FragmentChatImageItemOutBinding, itemView: View) : ViewHolder(
+    class ChatImageOutViewHolder(private val binding: FragmentChatImageItemOutBinding, itemView: View, private val messageType: String) : ViewHolder(
         itemView
     ) {
         override fun bind(snapshot: DocumentSnapshot) {
@@ -183,11 +205,22 @@ class ChatListRecyclerViewAdapter(query: Query) : FirestoreAdapter<ChatListRecyc
                 crossfade(300)
                 placeholder(R.drawable.image_placeholder)
             }
-            binding.textViewReadBy.text = "Read ${chat.readBy.size.toString()}"
+            FirebaseQueries.subscribeToMemberLastVisit(chat.messageId, chat.timestamp!!) { totalReadBy ->
+                if (totalReadBy == 0) {
+                    binding.textViewReadBy.text = ""
+                }
+                else {
+                    binding.textViewReadBy.text = "Read By $totalReadBy"
+                }
+            }
             binding.textViewTimestamp.text = chat.timestamp?.toDate()
                 ?.let { RelativeDateAdapter(it).getHourMinuteFormat() }
             FirebaseQueries.subscribeToUser(chat.senderUserId) {
-                binding.imageViewProfile.load(it.profileImageUrl)
+                if(it.profileImageUrl != ""){
+                    binding.imageViewProfile.load(it.profileImageUrl)
+                }else{
+                    binding.imageViewProfile.setBackgroundResource(R.drawable.default_avatar)
+                }
             }
         }
     }
@@ -199,38 +232,72 @@ class ChatListRecyclerViewAdapter(query: Query) : FirestoreAdapter<ChatListRecyc
             val chat = snapshot.toObject<Chat>()!!
             chat.id = snapshot.id
             val uri = Uri.parse(chat.mediaUrl)
-            binding.videoViewChat.setVideoURI(uri)
+            Glide.with(itemView.context)
+                .asBitmap()
+                .load(uri)
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
+                    ) {
+                        binding.imageViewChat.setImageBitmap(resource)
+                    }
 
-            val mediaController = MediaController(itemView.context)
-            binding.videoViewChat.setMediaController(mediaController)
-            binding.videoViewChat.requestFocus()
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                    }
+                })
 
             binding.textViewTimestamp.text = chat.timestamp?.toDate()
                 ?.let { RelativeDateAdapter(it).getHourMinuteFormat() }
             FirebaseQueries.subscribeToUser(chat.senderUserId) {
                 binding.textViewName.text = it.name
-                binding.imageViewProfile.load(it.profileImageUrl)
+                if(it.profileImageUrl != ""){
+                    binding.imageViewProfile.load(it.profileImageUrl)
+                }else{
+                    binding.imageViewProfile.setBackgroundResource(R.drawable.default_avatar)
+                }
             }
         }
     }
 
-    class ChatVideoOutViewHolder(private val binding: FragmentChatVideoItemOutBinding, itemView: View) : ViewHolder(
+    class ChatVideoOutViewHolder(private val binding: FragmentChatVideoItemOutBinding, itemView: View, private val messageType: String) : ViewHolder(
         itemView
     ) {
         override fun bind(snapshot: DocumentSnapshot) {
             val chat = snapshot.toObject<Chat>()!!
             val uri = Uri.parse(chat.mediaUrl)
-            binding.videoViewChat.setVideoURI(uri)
+            Glide.with(itemView.context)
+                .asBitmap()
+                .load(uri)
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
+                    ) {
+                        binding.imageViewChat.setImageBitmap(resource)
+                    }
 
-            val mediaController = MediaController(itemView.context)
-            binding.videoViewChat.setMediaController(mediaController)
-            binding.videoViewChat.requestFocus()
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                    }
+                })
 
-            binding.textViewReadBy.text = "Read ${chat.readBy.size.toString()}"
+            FirebaseQueries.subscribeToMemberLastVisit(chat.messageId, chat.timestamp!!) { totalReadBy ->
+                if (totalReadBy == 0) {
+                    binding.textViewReadBy.text = ""
+                }
+                else {
+                    binding.textViewReadBy.text = "Read By $totalReadBy"
+                }
+            }
+
             binding.textViewTimestamp.text = chat.timestamp?.toDate()
                 ?.let { RelativeDateAdapter(it).getHourMinuteFormat() }
             FirebaseQueries.subscribeToUser(chat.senderUserId) {
-                binding.imageViewProfile.load(it.profileImageUrl)
+                if(it.profileImageUrl != ""){
+                    binding.imageViewProfile.load(it.profileImageUrl)
+                }else{
+                    binding.imageViewProfile.setBackgroundResource(R.drawable.default_avatar)
+                }
             }
         }
     }

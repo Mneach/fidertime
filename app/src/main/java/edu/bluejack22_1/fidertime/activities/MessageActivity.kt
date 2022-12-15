@@ -31,6 +31,7 @@ class MessageActivity : AppCompatActivity() {
     private lateinit var adapter: ChatListRecyclerViewAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var type: String
+    private var pinned = false
     private val userId = Firebase.auth.currentUser!!.uid
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,10 +41,10 @@ class MessageActivity : AppCompatActivity() {
 
         messageId = intent.getStringExtra("messageId").toString()
 
-        initializeAttachmentBox()
         initializeActionBar()
-        initializeRecyclerView()
+        initializeAttachmentBox()
         initializeChatBox()
+        initializeRecyclerView()
     }
 
     private fun initializeAttachmentBox() {
@@ -80,12 +81,12 @@ class MessageActivity : AppCompatActivity() {
     private var chooseMediaFromGallery = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if(result.resultCode == Activity.RESULT_OK && result.data != null){
             val filePath = result.data!!.data!!
-            var progressDialog = ProgressDialog(this)
+            val progressDialog = ProgressDialog(this)
             progressDialog.setTitle(getString(R.string.please_wait))
             progressDialog.show()
 
             FirebaseQueries.uploadMedia(filePath, type, this) { imageUrl ->
-                val chat = Chat("", getString(R.string.sent_an) + " " + type,
+                val chat = Chat("", "",
                     type, messageId, arrayListOf(), userId, Timestamp.now(), imageUrl)
                 FirebaseQueries.sendChatMedia(chat) {
                     scrollToBottom()
@@ -138,7 +139,7 @@ class MessageActivity : AppCompatActivity() {
         recyclerView.addItemDecoration(MarginItemDecoration(40, LinearLayoutManager.VERTICAL))
         val query = Firebase.firestore.collection("chats").whereEqualTo("messageId", messageId)
             .orderBy("timestamp", Query.Direction.DESCENDING)
-        adapter = ChatListRecyclerViewAdapter(query)
+        adapter = ChatListRecyclerViewAdapter(query, "personal")
         recyclerView.adapter = adapter
     }
 
@@ -146,6 +147,24 @@ class MessageActivity : AppCompatActivity() {
         FirebaseQueries.subscribeToMessage(messageId) {
             setNameAndProfile(it)
         }
+        FirebaseQueries.getMessageIsPinned(userId, messageId) { pinned ->
+            setButtonPinned(pinned)
+        }
+        binding.toolbarMessage.imageButtonPinned.setOnClickListener {
+            FirebaseQueries.togglePinnedMessage(userId, messageId, pinned) {
+                setButtonPinned(!pinned)
+            }
+        }
+    }
+
+    private fun setButtonPinned(pinned: Boolean) {
+        if (pinned) {
+            binding.toolbarMessage.imageButtonPinned.setImageResource(R.drawable.ic_baseline_push_pin_24)
+        }
+        else {
+            binding.toolbarMessage.imageButtonPinned.setImageResource(R.drawable.ic_outline_push_pin_24)
+        }
+        this.pinned = pinned
     }
 
     private fun setNameAndProfile(message: Message) {
@@ -198,6 +217,7 @@ class MessageActivity : AppCompatActivity() {
         adapter.startListening()
         recyclerView.recycledViewPool.clear()
         adapter.notifyDataSetChanged()
+        FirebaseQueries.updateMemberLastVisit(messageId, userId)
     }
 
     override fun onStop() {

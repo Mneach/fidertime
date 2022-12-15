@@ -2,7 +2,6 @@ package edu.bluejack22_1.fidertime.common
 
 import android.app.ProgressDialog
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import com.google.firebase.Timestamp
@@ -14,7 +13,6 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import edu.bluejack22_1.fidertime.activities.LoginActivity
 import edu.bluejack22_1.fidertime.models.*
 
 class FirebaseQueries {
@@ -273,12 +271,49 @@ class FirebaseQueries {
             }
         }
 
-        fun addMessage(messages : Message , callback: (messageId : String) -> Unit){
-            var messageRef = Firebase.firestore.collection("messages")
-            messageRef.add(messages)
-                .addOnSuccessListener { value ->
-                    callback(value.id)
+        fun addMessage(message : Message, callback: (messageId : String) -> Unit){
+            val usersRef = Firebase.firestore.collection("users")
+            val messageRef = Firebase.firestore.collection("messages").document()
+            val messageMembersRef = Firebase.firestore.collection("messages").document(messageRef.id).collection("members")
+            val messageMembers = message.members
+
+            Firebase.firestore.runBatch { batch ->
+                batch.set(messageRef, message)
+                messageMembers.forEach {messageMember ->
+                    batch.set(messageMembersRef.document(messageMember), MessageMember(messageMember, false, null))
+                    batch.set(usersRef.document(messageMember).collection("messages").document(messageRef.id),
+                        UserMessage(id = messageRef.id, notified = true, pinned = false))
                 }
+            }.addOnSuccessListener {
+                callback.invoke(messageRef.id)
+            }
+        }
+
+        fun getMessageIsPinned(userId: String, messageId: String, callback: (Boolean) -> Unit) {
+            val userMessagesRef = Firebase.firestore.collection("users").document(userId).collection("messages").document(messageId)
+            userMessagesRef.get().addOnSuccessListener { snapshot ->
+                val pinned = snapshot.getBoolean("pinned")!!
+                callback.invoke(pinned)
+            }
+        }
+
+        fun togglePinnedMessage(userId: String, messageId: String, pinnedBefore: Boolean, callback: () -> Unit) {
+            val userMessagesRef = Firebase.firestore.collection("users").document(userId).collection("messages").document(messageId)
+            userMessagesRef.update("pinned", !pinnedBefore)
+            callback.invoke()
+        }
+
+        fun subscribeToMemberLastVisit(messageId: String, timestamp: Timestamp, callback: (Int) -> Unit) {
+            val messageMembersRef = Firebase.firestore.collection("messages").document(messageId).collection("members")
+                .whereGreaterThanOrEqualTo("lastVisitTimestamp", timestamp)
+            messageMembersRef.addSnapshotListener { value, e ->
+                if (e != null) {
+                    return@addSnapshotListener
+                }
+                if (value != null && !value.isEmpty) {
+                    callback.invoke(value.size() - 1)
+                }
+            }
         }
     }
 }

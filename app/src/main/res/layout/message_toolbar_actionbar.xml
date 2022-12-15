@@ -9,40 +9,62 @@
     android:background="@color/ascent_color"
     app:contentInsetStartWithNavigation="0dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/action_bar_profile"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
         android:gravity="center">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/image_view_profile"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginEnd="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:src="@tools:sample/avatars" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/linearLayout"
+            android:layout_width="0dp"
             android:layout_height="48dp"
-            android:orientation="vertical">
+            android:layout_marginHorizontal="12dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/image_button_pinned"
+            app:layout_constraintStart_toEndOf="@+id/image_view_profile"
+            app:layout_constraintTop_toTopOf="parent">
+
             <TextView
                 android:id="@+id/text_view_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
                 android:text="Tegar Abdullah"
                 android:textColor="@color/white"
-                android:textSize="18sp"
-                android:layout_marginBottom="4dp"/>
+                android:textSize="18sp" />
+
             <TextView
                 android:id="@+id/text_view_subtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
                 android:text="online"
-                android:textSize="14sp"/>
+                android:textColor="@color/white"
+                android:textSize="14sp" />
         </LinearLayout>
-    </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/image_button_pinned"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_outline_push_pin_24"
+            android:background="@android:color/transparent"
+            android:layout_marginEnd="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/linearLayout"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.appcompat.widget.Toolbar>

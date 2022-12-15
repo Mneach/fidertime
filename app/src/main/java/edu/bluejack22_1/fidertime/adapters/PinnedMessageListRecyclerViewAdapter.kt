@@ -1,19 +1,24 @@
 package edu.bluejack22_1.fidertime.adapters
 
+import FirestoreAdapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import edu.bluejack22_1.fidertime.R
+import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.databinding.FragmentPinnedMessageItemBinding
 import edu.bluejack22_1.fidertime.models.Message
 import edu.bluejack22_1.fidertime.models.User
 import edu.bluejack22_1.fidertime.models.UserMessage
 
-class PinnedMessageListRecyclerViewAdapter(private val messages: ArrayList<UserMessage>) : RecyclerView.Adapter<PinnedMessageListRecyclerViewAdapter.ViewHolder>() {
+class PinnedMessageListRecyclerViewAdapter(query: Query) : FirestoreAdapter<PinnedMessageListRecyclerViewAdapter.ViewHolder>(query) {
     override fun onCreateViewHolder(
         viewGroup: ViewGroup,
         viewType: Int
@@ -23,40 +28,24 @@ class PinnedMessageListRecyclerViewAdapter(private val messages: ArrayList<UserM
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val messageItem = messages[position]
-        viewHolder.bind(messageItem)
+        val snapshot = getSnapshot(position)
+        viewHolder.bind(snapshot)
         viewHolder.itemView.setOnClickListener {
-            onItemClick?.invoke(messageItem.id)
+            snapshot?.id?.let { it1 -> onItemClick?.invoke(it1) }
         }
-    }
-
-    override fun getItemCount(): Int {
-        return messages.size
     }
 
     var onItemClick : ((String) -> Unit)? = null
 
     class ViewHolder(private val itemBinding: FragmentPinnedMessageItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
 
-        private val db = Firebase.firestore
         private val userId = Firebase.auth.currentUser!!.uid
 
-        fun bind(messageItem: UserMessage) {
-            subscribeToMessage(messageItem)
-        }
-
-        private fun subscribeToMessage(messageItem: UserMessage) {
-            val messageId = messageItem.id
-            val messageRef = db.collection("messages").document(messageId)
-            messageRef.addSnapshotListener {snapshot, e ->
-                if (e != null) {
-                    return@addSnapshotListener
-                }
-                if (snapshot != null && snapshot.exists()) {
-                    val message = snapshot.toObject<Message>()
-                    message!!.id = snapshot.id
-                    setNameAndProfile(message)
-                }
+        fun bind(snapshot: DocumentSnapshot?) {
+            val messageItem = snapshot!!.toObject<Message>()!!
+            messageItem.id = snapshot.id
+            FirebaseQueries.subscribeToMessage(messageItem.id) { message ->
+                setNameAndProfile(message)
             }
         }
 
@@ -67,26 +56,18 @@ class PinnedMessageListRecyclerViewAdapter(private val messages: ArrayList<UserM
             }
             else {
                 val withUserId = message.members.find { memberId -> memberId != userId }
-                subscribeToUser(withUserId!!)
+                FirebaseQueries.subscribeToUser(withUserId!!) { user ->
+                    setNameAndProfile(user)
+                }
             }
         }
 
         private fun setNameAndProfile(user: User) {
             itemBinding.textViewName.text = user.name
-            itemBinding.imageViewProfile.load(user.profileImageUrl)
-        }
-
-        private fun subscribeToUser(withUserId: String) {
-            val userRef = db.collection("users").document(withUserId)
-            userRef.addSnapshotListener {snapshot, e ->
-                if (e != null) {
-                    return@addSnapshotListener
-                }
-                if (snapshot != null && snapshot.exists()) {
-                    val user = snapshot.toObject<User>()
-                    user!!.id = snapshot.id
-                    setNameAndProfile(user)
-                }
+            if(user.profileImageUrl != ""){
+                itemBinding.imageViewProfile.load(user.profileImageUrl)
+            }else{
+                itemBinding.imageViewProfile.setBackgroundResource(R.drawable.default_avatar)
             }
         }
     }

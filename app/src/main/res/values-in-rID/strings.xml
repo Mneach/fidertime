@@ -39,7 +39,10 @@
     <string name="search">Cari</string>
     <string name="pinned_message">pesan yang disematkan</string>
     <string name="log_out">keluar</string>
-    <string name="sent_an">mengirim sebuah </string>
+    <string name="sent_an">Mengirim sebuah</string>
+    <string name="sent_a">Mengirim sebuah</string>
+    <string name="please_wait">Mohon tunggu...</string>
+    <string name="progress">Progress...</string>
     <string name="all">semua</string>
     <string name="personal">pribadi</string>
     <string name="group">grup</string>
