@@ -49,15 +49,11 @@
 
     <string name="invalid_credential">INVALID CREDENTIAL</string>
 
-<<<<<<< HEAD
     <string name="Add_Member_Group_Validation">Please Choose A Member First</string>
     <string name="Group_Name_Validation">Group Name Cannot Be Empty</string>
     <string name="Group_Description_Validation">Group Description Cannot Be Empty</string>
     <string name="Group_Image_Validation">Please Enter A Group Image</string>
 
-
-=======
->>>>>>> 3ef198edf96db8be92d4820964000a18cd9c4799
     <!--  PROGRESS  -->
     <string name="please_wait">Please Wait...</string>
     <string name="progress">Progress...</string>

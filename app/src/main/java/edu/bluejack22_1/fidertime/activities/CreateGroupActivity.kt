@@ -19,7 +19,7 @@ import kotlinx.coroutines.DEBUG_PROPERTY_NAME
 
 class CreateGroupActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCreateGroupBinding
-    private var participants : ArrayList<User> = arrayListOf()
+    private var participantIds : ArrayList<String> = arrayListOf()
     private lateinit var filePath : Uri
     private var checkChangeImageUrl = false
 
@@ -37,7 +37,7 @@ class CreateGroupActivity : AppCompatActivity() {
     private fun setBackButton(){
         binding.toolbarCreateGroup.backButton.setOnClickListener {
             val intent = Intent(this , AddParticipantActivity::class.java)
-            intent.putExtra("ParticipantData" , participants)
+            intent.putStringArrayListExtra("ParticipantIds" , participantIds)
             startActivity(intent)
         }
     }
@@ -58,7 +58,7 @@ class CreateGroupActivity : AppCompatActivity() {
                 message.messageType = "group"
                 message.groupName = binding.groupNameInput.text.toString()
                 message.groupDescription = binding.groupDescriptionInput.text.toString()
-                message.members = participants.map { it.id } as ArrayList<String>
+                message.members = participantIds
                 message.members.add(Utilities.getAuthFirebase().uid.toString())
                 Log.d("Members" , message.members.toString())
                 FirebaseQueries.addMessage(message){ messageId ->
@@ -101,9 +101,9 @@ class CreateGroupActivity : AppCompatActivity() {
 
 
     private fun initArrayOfParticipant(){
-        if(intent.getSerializableExtra("ParticipantData") != null){
-            val participantFromIntent : ArrayList<User> = intent.getSerializableExtra("ParticipantData") as ArrayList<User>
-            participants.addAll(participantFromIntent)
+        val participantIdsFromIntent = intent.getStringArrayListExtra("ParticipantIds")
+        if (participantIdsFromIntent != null) {
+            participantIds.addAll(participantIdsFromIntent)
         }
     }
 }
