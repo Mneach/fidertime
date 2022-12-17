@@ -30,9 +30,7 @@ class AddParticipantActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAddParticipantBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        initArrayOfParticipant()
         initializeRecyclerView()
-        initializeRecyclerViewSelectedParticipant()
         setToolbarAction()
     }
 
@@ -47,6 +45,8 @@ class AddParticipantActivity : AppCompatActivity() {
         FirebaseQueries.subscribeToContacts() {
             attachRecyclerViewAdapterParticipantList(it)
             setNumberOfParticipant(it.size)
+            initArrayOfParticipant()
+            initializeRecyclerViewSelectedParticipant()
             initializeFilter(it)
         }
 
@@ -85,8 +85,10 @@ class AddParticipantActivity : AppCompatActivity() {
         }
 
         binding.toolbarCreateGroup.nextButton.setOnClickListener {
+            Log.d("participants : " , participants.toString())
             val intent = Intent(this , CreateGroupActivity::class.java)
-            intent.putExtra("ParticipantData" , participants)
+            val participantIds : ArrayList<String> = participants.map { it.id } as ArrayList
+            intent.putStringArrayListExtra("ParticipantIds" , participantIds)
             startActivity(intent)
         }
     }
@@ -109,13 +111,14 @@ class AddParticipantActivity : AppCompatActivity() {
     }
 
     private fun setNumberOfParticipant(numberOfParticipant : Int){
-        binding.toolbarCreateGroup.numberOfParticipant.text =   numberOfParticipant.toString()
+        binding.toolbarCreateGroup.numberOfParticipant.text = numberOfParticipant.toString()
     }
 
     private fun initArrayOfParticipant(){
-        if(intent.getSerializableExtra("ParticipantData") != null){
-            val participantFromIntent : ArrayList<User> = intent.getSerializableExtra("ParticipantData") as ArrayList<User>
-            participants.addAll(participantFromIntent)
+        val participantIdsFromIntent = intent.getStringArrayListExtra("ParticipantIds")
+        if (participantIdsFromIntent != null) {
+            val participantData = adapter.getParticipantByIds(participantIdsFromIntent)
+            participants.addAll(participantData)
             binding.toolbarCreateGroup.currentNumberOfParticipant.text = participants.size.toString()
         }
     }

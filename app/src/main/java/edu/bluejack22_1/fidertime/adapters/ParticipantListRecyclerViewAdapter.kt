@@ -1,15 +1,13 @@
 package edu.bluejack22_1.fidertime.adapters
 
-import FirestoreAdapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.google.firebase.firestore.ktx.toObject
 import edu.bluejack22_1.fidertime.databinding.FragmentContactItemBinding
 import edu.bluejack22_1.fidertime.models.User
 
-class ParticipantListRecyclerViewAdapter (private var contactItems : ArrayList<User>) : RecyclerView.Adapter<ParticipantListRecyclerViewAdapter.ViewHolder>(){
+class ParticipantListRecyclerViewAdapter (private var participants : ArrayList<User>) : RecyclerView.Adapter<ParticipantListRecyclerViewAdapter.ViewHolder>(){
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val itemBinding = FragmentContactItemBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
@@ -17,7 +15,7 @@ class ParticipantListRecyclerViewAdapter (private var contactItems : ArrayList<U
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val contactItem = contactItems[position]
+        val contactItem = participants[position]
         holder.bind(contactItem)
         holder.itemView.setOnClickListener {
             onItemClick?.invoke(contactItem)
@@ -27,8 +25,12 @@ class ParticipantListRecyclerViewAdapter (private var contactItems : ArrayList<U
     var onItemClick : ((User) -> Unit)? = null
 
     fun setFilteredList(filteredParticipantData : ArrayList<User>){
-        this.contactItems = filteredParticipantData
+        this.participants = filteredParticipantData
         notifyDataSetChanged()
+    }
+
+    fun getParticipantByIds(participantIds: ArrayList<String>): ArrayList<User> {
+        return participants.filter { participantIds.contains(it.id) } as ArrayList<User>
     }
 
 
@@ -46,7 +48,7 @@ class ParticipantListRecyclerViewAdapter (private var contactItems : ArrayList<U
     }
 
     override fun getItemCount(): Int {
-        return contactItems.size
+        return participants.size
     }
 
 }
