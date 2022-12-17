@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.google.firebase.firestore.ktx.toObject
+import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.databinding.FragmentContactItemBinding
 import edu.bluejack22_1.fidertime.models.User
 
@@ -41,6 +42,8 @@ class ContactListRecyclerViewAdapter (private var contactItems : ArrayList<User>
             itemBinding.phoneNumber.text = contactItem.phoneNumber
             if(contactItem.profileImageUrl.isNotEmpty()){
                 itemBinding.imageViewProfile.load(contactItem.profileImageUrl)
+            }else{
+                itemBinding.imageViewProfile.setImageResource(R.drawable.default_avatar)
             }
         }
     }

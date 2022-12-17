@@ -8,6 +8,7 @@ import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.widget.Toast
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -127,6 +128,8 @@ class RegisterActivity : AppCompatActivity() {
                         "email" to email,
                         "name" to name,
                         "phoneNumber" to phoneNumber,
+                        "status" to "online",
+                        "lastSeenTimestamp" to Timestamp.now()
                     )
 
                     db.collection("users").document(id.toString())
