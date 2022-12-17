@@ -126,6 +126,7 @@ class LoginActivity : AppCompatActivity() {
                 if(task.isSuccessful){
                     val intent = Intent(this , MainActivity::class.java)
                     resetForm()
+                    FirebaseQueries.updateUserStatus(task.result.user!!.uid, mapOf(Pair("status", "online")))
                     startActivity(intent)
                 }else{
                     Toast.makeText(this , getString(R.string.invalid_credential) , Toast.LENGTH_SHORT).show()

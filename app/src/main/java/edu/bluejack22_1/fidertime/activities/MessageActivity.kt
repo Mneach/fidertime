@@ -4,10 +4,13 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import android.provider.OpenableColumns
+import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.net.toFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
@@ -20,10 +23,15 @@ import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.adapters.ChatListRecyclerViewAdapter
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.common.MarginItemDecoration
+import edu.bluejack22_1.fidertime.common.RelativeDateAdapter
+import edu.bluejack22_1.fidertime.common.Utilities
 import edu.bluejack22_1.fidertime.databinding.ActivityMessageBinding
 import edu.bluejack22_1.fidertime.models.Chat
 import edu.bluejack22_1.fidertime.models.Message
 import edu.bluejack22_1.fidertime.models.User
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
 
 class MessageActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMessageBinding
@@ -67,10 +75,21 @@ class MessageActivity : AppCompatActivity() {
             attachmentLayout.visibility = View.GONE
             selectMedia("video")
         }
+
+        val fileButton = binding.buttonFile
+        fileButton.setOnClickListener {
+            attachmentLayout.visibility = View.GONE
+            selectMedia("*")
+        }
     }
 
+
     private fun selectMedia(type: String) {
-        this.type = type
+        this.type = if (type == "*") {
+            "file"
+        } else {
+            type
+        }
         val intent = Intent()
         intent.type = "$type/*"
         intent.action = Intent.ACTION_GET_CONTENT
@@ -80,16 +99,29 @@ class MessageActivity : AppCompatActivity() {
 
     private var chooseMediaFromGallery = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if(result.resultCode == Activity.RESULT_OK && result.data != null){
-            val filePath = result.data!!.data!!
-            val progressDialog = ProgressDialog(this)
-            progressDialog.setTitle(getString(R.string.please_wait))
-            progressDialog.show()
+            result.data?.data?.let { returnUri ->
+                contentResolver.query(returnUri, null, null, null, null)
+            }?.use { cursor ->
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+                cursor.moveToFirst()
+                val fileName = cursor.getString(nameIndex)
+                val fileSize = cursor.getLong(sizeIndex)
 
-            FirebaseQueries.uploadMedia(filePath, type, this) { imageUrl ->
-                val chat = Chat("", "",
-                    type, messageId, arrayListOf(), userId, Timestamp.now(), imageUrl)
-                FirebaseQueries.sendChatMedia(chat) {
-                    scrollToBottom()
+                val filePath = result.data!!.data!!
+                val progressDialog = ProgressDialog(this)
+
+                progressDialog.setTitle(getString(R.string.please_wait))
+                progressDialog.show()
+
+                FirebaseQueries.uploadMedia(filePath, type, this) { imageUrl ->
+                    val chat = Chat("", "",
+                        type, messageId, arrayListOf(), userId, Timestamp.now(), imageUrl, fileName, fileSize)
+                    FirebaseQueries.sendChatMedia(chat, fileName, fileSize) {
+                        scrollToBottom()
+                        FirebaseQueries.updateMemberLastVisit(messageId, userId)
+                        progressDialog.dismiss()
+                    }
                 }
             }
         }
@@ -121,6 +153,7 @@ class MessageActivity : AppCompatActivity() {
                 editTextChat.text.clear()
                 FirebaseQueries.sendChatText(chat) {
                     scrollToBottom()
+                    FirebaseQueries.updateMemberLastVisit(messageId, userId)
                 }
             }
         }
@@ -134,12 +167,11 @@ class MessageActivity : AppCompatActivity() {
         recyclerView = binding.recyclerViewChats
         val layoutManager = LinearLayoutManager(this)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
-        layoutManager.reverseLayout = true
         recyclerView.layoutManager = layoutManager
         recyclerView.addItemDecoration(MarginItemDecoration(40, LinearLayoutManager.VERTICAL))
         val query = Firebase.firestore.collection("chats").whereEqualTo("messageId", messageId)
-            .orderBy("timestamp", Query.Direction.DESCENDING)
-        adapter = ChatListRecyclerViewAdapter(query, "personal")
+            .orderBy("timestamp", Query.Direction.ASCENDING)
+        adapter = ChatListRecyclerViewAdapter(query, "personal", this)
         recyclerView.adapter = adapter
     }
 
@@ -196,7 +228,12 @@ class MessageActivity : AppCompatActivity() {
 
     private fun setNameAndProfile(user: User) {
         binding.toolbarMessage.textViewTitle.text = user.name
-        binding.toolbarMessage.textViewSubtitle.text = user.status
+        binding.toolbarMessage.textViewSubtitle.text = if (user.status == "offline") {
+            "Last seen " + user.lastSeenTimestamp?.toDate()
+                ?.let { RelativeDateAdapter(it).getRelativeString() }
+        } else {
+            user.status
+        }
         if(user.profileImageUrl != ""){
             binding.toolbarMessage.imageViewProfile.load(user.profileImageUrl)
         }else{

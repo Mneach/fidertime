@@ -5,7 +5,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
-import edu.bluejack22_1.fidertime.R
 
 class Utilities {
 
@@ -15,7 +14,7 @@ class Utilities {
             return FirebaseAuth.getInstance();
         }
 
-        fun getImageName(path : String) : String{
+        fun getFileName(path : String) : String{
             return path.substring(path.lastIndexOf("/") + 1)
         }
 

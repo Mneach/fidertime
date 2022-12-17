@@ -177,7 +177,7 @@ class FirebaseQueries {
         }
 
         fun uploadImage(user : User , filePath : Uri , context : Context , callback: (imageUrl : String) -> Unit){
-            val imageName = Utilities.getImageName(filePath.path.toString())
+            val imageName = Utilities.getFileName(filePath.path.toString())
             val storageReference = FirebaseStorage.getInstance().getReference(user.email + "/images/" + imageName)
 
             var progressDialog = ProgressDialog(context)
@@ -205,7 +205,7 @@ class FirebaseQueries {
 
         fun uploadMedia(filePath : Uri, type: String, context : Context, callback: (imageUrl : String) -> Unit){
             val userId = Firebase.auth.currentUser!!.uid
-            val fileName = Utilities.getImageName(filePath.path.toString())
+            val fileName = Utilities.getFileName(filePath.path.toString())
             val storageReference = FirebaseStorage.getInstance().getReference(userId + "/" + type + "s/" + fileName)
 
             var progressDialog = ProgressDialog(context)
@@ -235,9 +235,9 @@ class FirebaseQueries {
                 .update("lastVisitTimestamp", Timestamp.now())
         }
 
-        fun sendChatMedia(chat: Chat, callback: () -> Unit) {
+        fun sendChatMedia(chat: Chat, fileName: String, fileSize: Long, callback: () -> Unit) {
             val messageId = chat.messageId
-            val media = Media("", null, chat.messageId, Timestamp.now(), chat.senderUserId, chat.chatType, null, chat.mediaUrl)
+            val media = Media("", fileName, chat.messageId, Timestamp.now(), chat.senderUserId, chat.chatType, fileSize, chat.mediaUrl)
             val chatsRef = Firebase.firestore.collection("chats").document()
             val messagesRef = Firebase.firestore.collection("messages").document(messageId)
             val mediaRef = Firebase.firestore.collection("media").document()
@@ -328,5 +328,10 @@ class FirebaseQueries {
                 }
             }
         }
+
+        fun updateUserStatus(userId: String, data: Map<String, Any>) {
+            Firebase.firestore.collection("users").document(userId).update(data)
+        }
+
     }
 }
