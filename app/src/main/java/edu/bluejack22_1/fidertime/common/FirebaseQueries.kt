@@ -6,6 +6,7 @@ import android.net.Uri
 import android.util.Log
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query.Direction
@@ -280,13 +281,25 @@ class FirebaseQueries {
             Firebase.firestore.runBatch { batch ->
                 batch.set(messageRef, message)
                 messageMembers.forEach {messageMember ->
-                    batch.set(messageMembersRef.document(messageMember), MessageMember(messageMember, false, null))
+                    if(messageMember == Utilities.getAuthFirebase().uid){
+                        batch.set(messageMembersRef.document(messageMember), MessageMember(messageMember, true, null))
+                    }else{
+                        batch.set(messageMembersRef.document(messageMember), MessageMember(messageMember, false, null))
+                    }
                     batch.set(usersRef.document(messageMember).collection("messages").document(messageRef.id),
                         UserMessage(id = messageRef.id, notified = true, pinned = false))
                 }
             }.addOnSuccessListener {
                 callback.invoke(messageRef.id)
             }
+        }
+
+        fun updateGroupPhoto(messageId : String, imageUrl : String, callback: (String) -> Unit){
+            val messageRef = Firebase.firestore.collection("messages").document(messageId)
+            messageRef.update("groupImageUrl" , imageUrl)
+                .addOnSuccessListener {
+                    callback.invoke(messageId)
+                }
         }
 
         fun getMessageIsPinned(userId: String, messageId: String, callback: (Boolean) -> Unit) {

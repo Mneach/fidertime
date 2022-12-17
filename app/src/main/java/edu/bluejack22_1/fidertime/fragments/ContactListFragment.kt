@@ -2,7 +2,6 @@ package edu.bluejack22_1.fidertime.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +9,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.ktx.Firebase
+import edu.bluejack22_1.fidertime.activities.AddParticipantActivity
 import edu.bluejack22_1.fidertime.activities.MessageActivity
 import edu.bluejack22_1.fidertime.adapters.ContactListRecyclerViewAdapter
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
@@ -34,7 +33,7 @@ class ContactListFragment : Fragment() {
     ): View? {
 
         _binding = FragmentContactListBinding.inflate(inflater , container , false)
-
+        createGroupAction()
         initializeRecyclerView()
         return binding.root
     }
@@ -48,7 +47,6 @@ class ContactListFragment : Fragment() {
 
         FirebaseQueries.subscribeToContacts() {
             attachRecyclerViewAdapter(it)
-
             initializeFilter(it)
         }
 
@@ -110,5 +108,12 @@ class ContactListFragment : Fragment() {
         }
 
         adapter.setFilteredList(filteredList)
+    }
+
+    private fun createGroupAction(){
+        binding.createGroupIcon.setOnClickListener{
+            val intent = Intent(context , AddParticipantActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

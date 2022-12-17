@@ -49,11 +49,17 @@
 
     <string name="invalid_credential">INVALID CREDENTIAL</string>
 
-   <!--  PROGRESS  -->
+    <string name="Add_Member_Group_Validation">Please Choose A Member First</string>
+    <string name="Group_Name_Validation">Group Name Cannot Be Empty</string>
+    <string name="Group_Description_Validation">Group Description Cannot Be Empty</string>
+    <string name="Group_Image_Validation">Please Enter A Group Image</string>
+
+
+    <!--  PROGRESS  -->
     <string name="please_wait">Please Wait...</string>
     <string name="progress">Progress...</string>
 
-   <!-- SUCCESS  -->
+    <!-- SUCCESS  -->
     <string name="success_register">Success Register</string>
 
     <string name="cancel">Cancel</string>
@@ -69,10 +75,19 @@
     <string name="sent_an">Sent an</string>
     <string name="sent_a">Sent a</string>
 
-   <!-- TAB LAYOUT -->
+    <!-- TAB LAYOUT -->
     <string name="all">All</string>
     <string name="personal">Personal</string>
     <string name="group">Group</string>
+    <string name="title_activity_create_group_acitvity">CreateGroupAcitvity</string>
+    <string name="title_activity_create_group">CreateGroupActivity</string>
+    <string name="create">Create</string>
+    <string name="create_group">Create Group</string>
+    <string name="add_participant">Add Participant</string>
+    <string name="back">back</string>
+    <string name="description">Description</string>
+    <string name="group_name">Group Name</string>
+    <string name="group_description">Group Description</string>
 
 
 </resources>

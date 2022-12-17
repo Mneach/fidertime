@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -24,10 +23,11 @@
         >
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/image_view_profile"
+            android:id="@+id/image_view_group"
             android:layout_height="100dp"
             android:layout_width="100dp"
-            tools:src="@drawable/default_avatar" />
+
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -38,7 +38,7 @@
             >
 
             <TextView
-                android:id="@+id/name"
+                android:id="@+id/group_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
@@ -47,14 +47,27 @@
                 android:textSize="24sp"
                 />
 
-            <TextView
-                android:id="@+id/phoneNumber"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="+6212341234"
-                android:textColor="@color/disable_color"
-                android:textSize="18sp"
-                />
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:id="@+id/count_member"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/disable_color"
+                    android:textSize="18sp"
+                    />
+
+                <TextView
+                    android:id="@+id/count_online"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/disable_color"
+                    android:textSize="18sp"
+                    />
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>
@@ -87,7 +100,7 @@
                 />
 
             <TextView
-                android:id="@+id/bio"
+                android:id="@+id/group_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16dp"

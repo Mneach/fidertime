@@ -17,10 +17,10 @@
         android:gravity="center">
 
         <Button
-            android:id="@+id/cancel_button"
+            android:id="@+id/back_button"
             android:layout_width="100dp"
             android:layout_height="40dp"
-            android:text="@string/cancel"
+            android:text="@string/back"
             android:gravity="center"
             android:backgroundTint="@color/ascent_color"
             android:textColor="@color/white"
@@ -38,7 +38,7 @@
             android:textColor="@color/white"
             android:textSize="20sp"
             android:gravity="center"
-            android:text="@string/edit_profile"
+            android:text="@string/create_group"
             />
 
         <View
@@ -47,10 +47,10 @@
             android:layout_weight="1" />
 
         <Button
-            android:id="@+id/edit_button"
+            android:id="@+id/create_button"
             android:layout_width="100dp"
             android:layout_height="40dp"
-            android:text="@string/edit"
+            android:text="@string/create"
             android:gravity="center"
             android:backgroundTint="@color/ascent_color"
             android:textColor="@color/white"

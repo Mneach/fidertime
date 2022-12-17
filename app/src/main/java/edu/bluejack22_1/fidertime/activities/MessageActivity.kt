@@ -173,6 +173,11 @@ class MessageActivity : AppCompatActivity() {
             binding.toolbarMessage.textViewSubtitle.text = "${message.members.size} members"
             binding.toolbarMessage.imageViewProfile.load(message.groupImageUrl)
             setActionBar()
+            binding.toolbarMessage.actionBarProfile.setOnClickListener{
+                val intent = Intent(this , MessageGroupDetailActivity::class.java)
+                intent.putExtra("messageId" , messageId);
+                startActivity(intent)
+            }
         }
         else {
             val withUserId = message.members.find { memberId -> memberId != userId }

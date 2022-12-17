@@ -9,7 +9,7 @@ import com.google.firebase.firestore.ktx.toObject
 import edu.bluejack22_1.fidertime.databinding.FragmentContactItemBinding
 import edu.bluejack22_1.fidertime.models.User
 
-class ContactListRecyclerViewAdapter (private var contactItems : ArrayList<User>) : RecyclerView.Adapter<ContactListRecyclerViewAdapter.ViewHolder>(){
+class ParticipantListRecyclerViewAdapter (private var contactItems : ArrayList<User>) : RecyclerView.Adapter<ParticipantListRecyclerViewAdapter.ViewHolder>(){
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val itemBinding = FragmentContactItemBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
@@ -20,14 +20,14 @@ class ContactListRecyclerViewAdapter (private var contactItems : ArrayList<User>
         val contactItem = contactItems[position]
         holder.bind(contactItem)
         holder.itemView.setOnClickListener {
-            onItemClick?.invoke(contactItem.id)
+            onItemClick?.invoke(contactItem)
         }
     }
 
-    var onItemClick : ((String) -> Unit)? = null
+    var onItemClick : ((User) -> Unit)? = null
 
-    fun setFilteredList(filteredContactItems : ArrayList<User>){
-        this.contactItems = filteredContactItems
+    fun setFilteredList(filteredParticipantData : ArrayList<User>){
+        this.contactItems = filteredParticipantData
         notifyDataSetChanged()
     }
 
