@@ -5,14 +5,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.fragments.FileListFragment
 import edu.bluejack22_1.fidertime.fragments.LinkListFragment
 import edu.bluejack22_1.fidertime.fragments.MediaListFragment
+import edu.bluejack22_1.fidertime.fragments.MemberListFragment
 
-class MessageGroupMediaPagerAdapter (fragmentManager: FragmentManager, lifecycle: Lifecycle, var messageId : String): FragmentStateAdapter(fragmentManager, lifecycle){
+class MessageGroupMediaPagerAdapter (fragmentManager: FragmentManager, lifecycle: Lifecycle, var messageId : String, var groupMemberIds : ArrayList<String>): FragmentStateAdapter(fragmentManager, lifecycle){
     override fun getItemCount(): Int {
         return 3
     }
@@ -22,6 +24,11 @@ class MessageGroupMediaPagerAdapter (fragmentManager: FragmentManager, lifecycle
         Log.d("message id = " , messageId)
 
         return when (position) {
+            0 -> {
+                MemberListFragment(
+                    db.collection("users").whereIn(FieldPath.documentId() , groupMemberIds)
+                )
+            }
             1 -> {
                 MediaListFragment(
                     db.collection("media").whereEqualTo("messageId", messageId).whereEqualTo("type" , "image").orderBy("timestamp", Query.Direction.DESCENDING)

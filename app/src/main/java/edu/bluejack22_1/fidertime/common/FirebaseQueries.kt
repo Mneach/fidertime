@@ -8,6 +8,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query.Direction
 import com.google.firebase.firestore.ktx.firestore
@@ -333,5 +334,42 @@ class FirebaseQueries {
             Firebase.firestore.collection("users").document(userId).update(data)
         }
 
+        fun subscribeToMemberGroup(messageIds: ArrayList<String> , callback: (messages: ArrayList<User>) -> Unit){
+            val userRef = Firebase.firestore.collection("users")
+            userRef.whereIn(FieldPath.documentId() , messageIds)
+                .addSnapshotListener { snapshot , e ->
+                    if (e != null) {
+                        return@addSnapshotListener
+                    }
+                    if (snapshot != null && !snapshot.isEmpty) {
+                        val users = ArrayList<User>()
+                        for(doc in snapshot){
+                            val user = doc.toObject<User>()
+                            user.id = doc.id
+                            users.add(user)
+                        }
+                        callback.invoke(users)
+                    }
+                }
+        }
+
+        fun subscribeToOnlineMember(messageIds: ArrayList<String> , callback: (messages: ArrayList<User>) -> Unit){
+            val userRef = Firebase.firestore.collection("users")
+            userRef.whereIn(FieldPath.documentId() , messageIds).whereEqualTo("status" , "online")
+                .addSnapshotListener { snapshot , e ->
+                    if (e != null) {
+                        return@addSnapshotListener
+                    }
+                    if (snapshot != null && !snapshot.isEmpty) {
+                        val users = ArrayList<User>()
+                        for(doc in snapshot){
+                            val user = doc.toObject<User>()
+                            user.id = doc.id
+                            users.add(user)
+                        }
+                        callback.invoke(users)
+                    }
+                }
+        }
     }
 }
