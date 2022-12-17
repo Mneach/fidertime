@@ -9,6 +9,6 @@ data class Media (
     var timestamp: Timestamp? = null,
     var senderUserId: String = "",
     var type: String = "",
-    var size : Int? = 0,
+    var size : Long? = 0,
     var url: String = "",
 )

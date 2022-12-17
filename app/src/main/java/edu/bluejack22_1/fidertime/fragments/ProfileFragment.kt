@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import coil.load
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.R
@@ -47,6 +48,7 @@ class ProfileFragment : Fragment() {
             val intent = Intent(context, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
+            FirebaseQueries.updateUserStatus(Firebase.auth.currentUser!!.uid, mapOf(Pair("status", "offline"), Pair("lastSeenTimestamp", Timestamp.now())))
             val mainActivity : MainActivity = activity as MainActivity
 
             if(GoogleSignIn.getLastSignedInAccount(mainActivity) != null){

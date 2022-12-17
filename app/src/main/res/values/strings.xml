@@ -49,11 +49,11 @@
 
     <string name="invalid_credential">INVALID CREDENTIAL</string>
 
-   <!--  PROGRESS  -->
+    <!--  PROGRESS  -->
     <string name="please_wait">Please Wait...</string>
     <string name="progress">Progress...</string>
 
-   <!-- SUCCESS  -->
+    <!-- SUCCESS  -->
     <string name="success_register">Success Register</string>
 
     <string name="cancel">Cancel</string>
@@ -69,7 +69,7 @@
     <string name="sent_an">Sent an</string>
     <string name="sent_a">Sent a</string>
 
-   <!-- TAB LAYOUT -->
+    <!-- TAB LAYOUT -->
     <string name="all">All</string>
     <string name="personal">Personal</string>
     <string name="group">Group</string>

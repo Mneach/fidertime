@@ -1,5 +1,6 @@
 package edu.bluejack22_1.fidertime.models
 
+import com.google.firebase.Timestamp
 import java.io.Serializable
 
 data class User(
@@ -13,5 +14,6 @@ data class User(
     var phoneNumber: String = "",
     var profileImageUrl: String = "",
     var status: String = "",
-    var stories: ArrayList<String> = arrayListOf()
+    var stories: ArrayList<String> = arrayListOf(),
+    var lastSeenTimestamp: Timestamp? = null
 ) : Serializable
