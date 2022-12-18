@@ -21,6 +21,7 @@ data class Chat(
             "image" -> TypeEnum.IMAGE
             "video" -> TypeEnum.VIDEO
             "file" -> TypeEnum.FILE
+            "voice" -> TypeEnum.VOICE
             else -> TypeEnum.TEXT
         }
     }

@@ -204,7 +204,7 @@ class FirebaseQueries {
 
 
 
-        fun uploadMedia(filePath : Uri, type: String, context : Context, callback: (imageUrl : String) -> Unit){
+        fun uploadMedia(filePath : Uri, type: String, context : Context, callback: (mediaUrl : String) -> Unit){
             val userId = Firebase.auth.currentUser!!.uid
             val fileName = Utilities.getFileName(filePath.path.toString())
             val storageReference = FirebaseStorage.getInstance().getReference(userId + "/" + type + "s/" + fileName)

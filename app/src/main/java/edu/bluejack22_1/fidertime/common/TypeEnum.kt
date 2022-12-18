@@ -5,5 +5,6 @@ enum class TypeEnum(val id: Int) {
     FILE(2),
     LINK(3),
     VIDEO(4),
-    TEXT(5)
+    TEXT(5),
+    VOICE(6)
 }

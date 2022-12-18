@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="end"
-    tools:context=".fragments.ChatVideoItemOutFragment">
+    tools:context=".fragments.ChatVoiceItemOutFragment">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -31,23 +31,27 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
+        <me.jagar.chatvoiceplayerlibrary.VoicePlayerView
+            android:id="@+id/voice_player_view"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            app:cardElevation="8dp"
-            app:cardCornerRadius="8dp"
-            android:layout_gravity="end"
-            android:layout_marginStart="8dp">
-
-            <ImageView
-                android:id="@+id/image_view_chat"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:scaleType="centerCrop"
-                android:adjustViewBounds="true"
-                android:src="@drawable/image_placeholder"
-                />
-        </androidx.cardview.widget.CardView>
+            android:layout_marginStart="8dp"
+            app:enableVisualizer="true"
+            app:visualizationPlayedColor="@color/ascent_color"
+            app:visualizationNotPlayedColor="@color/secondary_color"
+            app:playPauseBackgroundColor="@color/ascent_color"
+            app:timingBackgroundColor="@color/ascent_color_opacity_50"
+            app:seekBarProgressColor="#000"
+            app:showShareButton="false"
+            app:shareCornerRadius="100"
+            app:playPauseCornerRadius="100"
+            app:showTiming="true"
+            app:viewCornerRadius="16"
+            app:viewBackground="@color/cardview_dark_background"
+            app:progressTimeColor="#000"
+            app:seekBarThumbColor="@color/ascent_color"
+            app:shareBackgroundColor="@color/ascent_color"
+            app:playProgressbarColor="@color/ascent_color"/>
 
     </LinearLayout>
 

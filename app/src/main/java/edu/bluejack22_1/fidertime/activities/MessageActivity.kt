@@ -3,17 +3,23 @@ package edu.bluejack22_1.fidertime.activities
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
+import android.media.MediaRecorder
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.net.toFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.devlomi.record_view.OnRecordListener
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
@@ -23,15 +29,15 @@ import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.adapters.ChatListRecyclerViewAdapter
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.common.MarginItemDecoration
+import edu.bluejack22_1.fidertime.common.Permissions
 import edu.bluejack22_1.fidertime.common.RelativeDateAdapter
-import edu.bluejack22_1.fidertime.common.Utilities
 import edu.bluejack22_1.fidertime.databinding.ActivityMessageBinding
 import edu.bluejack22_1.fidertime.models.Chat
 import edu.bluejack22_1.fidertime.models.Message
 import edu.bluejack22_1.fidertime.models.User
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Path
+import java.io.IOException
+
 
 class MessageActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMessageBinding
@@ -39,6 +45,8 @@ class MessageActivity : AppCompatActivity() {
     private lateinit var adapter: ChatListRecyclerViewAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var type: String
+    private lateinit var mediaRecorder: MediaRecorder
+    private lateinit var recordingPath: String
     private var pinned = false
     private val userId = Firebase.auth.currentUser!!.uid
 
@@ -53,6 +61,129 @@ class MessageActivity : AppCompatActivity() {
         initializeAttachmentBox()
         initializeChatBox()
         initializeRecyclerView()
+        initializeRecorderView()
+        initializeEditTextChat()
+    }
+
+    private fun initializeVoiceRecorder() {
+        mediaRecorder = MediaRecorder()
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+
+        MediaStore.Audio.Media.DISPLAY_NAME
+
+        val file = File(getExternalFilesDir("")!!.absolutePath, "")
+
+        if (!file.exists()) {
+            file.mkdirs()
+        }
+
+        recordingPath = file.absolutePath + File.separator + System.currentTimeMillis() + ".3gp"
+
+        mediaRecorder.setOutputFile(recordingPath)
+    }
+
+    private fun initializeEditTextChat() {
+        binding.editTextChat.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {}
+            override fun beforeTextChanged(
+                s: CharSequence, start: Int,
+                count: Int, after: Int
+            ) {
+            }
+
+            override fun onTextChanged(
+                s: CharSequence, start: Int,
+                before: Int, count: Int
+            ) {
+                if (s.isEmpty()) {
+                    binding.parentRecord.visibility = View.VISIBLE
+                }
+                else {
+                    binding.parentRecord.visibility = View.GONE
+                }
+            }
+        })
+    }
+
+    private fun initializeRecorderView() {
+        val recordView = binding.recordView
+        val recordButton = binding.recordButton
+
+        recordButton.setRecordView(recordView)
+        recordButton.isListenForRecord = false
+
+        recordButton.setOnClickListener {
+            if (Permissions.isRecordingGranted(this)) {
+                recordButton.isListenForRecord = true
+            }
+            else {
+                Permissions.requestRecordingPermission(this)
+            }
+        }
+
+        recordView.setOnRecordListener(object : OnRecordListener {
+            override fun onStart() {
+                hideEditTextBox()
+                initializeVoiceRecorder()
+
+                mediaRecorder.prepare()
+                mediaRecorder.start()
+            }
+
+            override fun onCancel() {
+                mediaRecorder.reset()
+                mediaRecorder.release()
+                val file = File(recordingPath)
+                if (file.exists()) {
+                    file.delete()
+                }
+            }
+
+            override fun onFinish(recordTime: Long, limitReached: Boolean) {
+                showEditTextBox()
+                mediaRecorder.stop()
+                mediaRecorder.reset()
+                mediaRecorder.release()
+
+                val recordingUri = Uri.fromFile(File(recordingPath))
+                FirebaseQueries.uploadMedia(recordingUri, "voice", this@MessageActivity) {
+                    val chat = Chat("", "", "voice", messageId, arrayListOf(), userId, Timestamp.now(), it, System.currentTimeMillis().toString(), 1024)
+                    FirebaseQueries.sendChatMedia(chat, System.currentTimeMillis().toString(), 1024) {
+                        scrollToBottom()
+                        FirebaseQueries.updateMemberLastVisit(messageId, userId)
+                    }
+                }
+
+            }
+
+            override fun onLessThanSecond() {
+                showEditTextBox()
+                mediaRecorder.reset()
+                mediaRecorder.release()
+                val file = File(recordingPath)
+                if (file.exists()) {
+                    file.delete()
+                }
+            }
+        })
+
+        recordView.setOnBasketAnimationEndListener {
+            showEditTextBox()
+        }
+    }
+
+    private fun hideEditTextBox() {
+        binding.editTextChat.visibility = View.GONE
+        binding.buttonAttachment.visibility = View.GONE
+        binding.buttonSend.visibility = View.GONE
+    }
+
+    private fun showEditTextBox() {
+        binding.editTextChat.visibility = View.VISIBLE
+        binding.buttonAttachment.visibility = View.VISIBLE
+        binding.buttonSend.visibility = View.VISIBLE
     }
 
     private fun initializeAttachmentBox() {
@@ -109,10 +240,6 @@ class MessageActivity : AppCompatActivity() {
                 val fileSize = cursor.getLong(sizeIndex)
 
                 val filePath = result.data!!.data!!
-                val progressDialog = ProgressDialog(this)
-
-                progressDialog.setTitle(getString(R.string.please_wait))
-                progressDialog.show()
 
                 FirebaseQueries.uploadMedia(filePath, type, this) { imageUrl ->
                     val chat = Chat("", "",
@@ -120,7 +247,6 @@ class MessageActivity : AppCompatActivity() {
                     FirebaseQueries.sendChatMedia(chat, fileName, fileSize) {
                         scrollToBottom()
                         FirebaseQueries.updateMemberLastVisit(messageId, userId)
-                        progressDialog.dismiss()
                     }
                 }
             }
@@ -260,6 +386,9 @@ class MessageActivity : AppCompatActivity() {
         recyclerView.recycledViewPool.clear()
         adapter.notifyDataSetChanged()
         FirebaseQueries.updateMemberLastVisit(messageId, userId)
+        if (!Permissions.isStorageGranted(this)) {
+            Permissions.requestStoragePermission(this)
+        }
     }
 
     override fun onStop() {

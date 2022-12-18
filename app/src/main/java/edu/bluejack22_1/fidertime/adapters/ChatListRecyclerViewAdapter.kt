@@ -39,22 +39,27 @@ import edu.bluejack22_1.fidertime.databinding.FragmentChatItemInBinding
 import edu.bluejack22_1.fidertime.databinding.FragmentChatItemOutBinding
 import edu.bluejack22_1.fidertime.databinding.FragmentChatVideoItemInBinding
 import edu.bluejack22_1.fidertime.databinding.FragmentChatVideoItemOutBinding
+import edu.bluejack22_1.fidertime.databinding.FragmentChatVoiceItemInBinding
+import edu.bluejack22_1.fidertime.databinding.FragmentChatVoiceItemOutBinding
 import edu.bluejack22_1.fidertime.models.*
 import java.text.DecimalFormat
 import java.util.Calendar
 
 
+const val CHAT_IN = 1
+const val CHAT_OUT = 2
+const val CHAT_IN_IMAGE = 3
+const val CHAT_OUT_IMAGE = 4
+const val CHAT_IN_VIDEO = 5
+const val CHAT_OUT_VIDEO = 6
+const val CHAT_IN_FILE = 7
+const val CHAT_OUT_FILE = 8
+const val CHAT_IN_VOICE = 9
+const val CHAT_OUT_VOICE = 10
+
 class ChatListRecyclerViewAdapter(query: Query, private val messageType: String, private val context: Context) : FirestoreAdapter<ChatListRecyclerViewAdapter.ViewHolder>(query) {
 
     private val userId = Firebase.auth.currentUser!!.uid
-    private val CHAT_IN = 1
-    private val CHAT_OUT = 2
-    private val CHAT_IN_IMAGE = 3
-    private val CHAT_OUT_IMAGE = 4
-    private val CHAT_IN_VIDEO = 5
-    private val CHAT_OUT_VIDEO = 6
-    private val CHAT_IN_FILE = 7
-    private val CHAT_OUT_FILE = 8
 
     override fun onDocumentAdded(change: DocumentChange) {
         super.onDocumentAdded(change)
@@ -134,6 +139,14 @@ class ChatListRecyclerViewAdapter(query: Query, private val messageType: String,
             val binding = FragmentChatFileItemInBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
             return ChatFileInViewHolder(binding, binding.root)
         }
+        if (viewType == CHAT_OUT_VOICE) {
+            val binding = FragmentChatVoiceItemOutBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
+            return ChatVoiceOutViewHolder(binding, binding.root, messageType)
+        }
+        if (viewType == CHAT_IN_VOICE) {
+            val binding = FragmentChatVoiceItemInBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
+            return ChatVoiceInViewHolder(binding, binding.root)
+        }
         val binding = FragmentChatImageItemInBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
         return ChatImageInViewHolder(binding, binding.root)
     }
@@ -163,6 +176,12 @@ class ChatListRecyclerViewAdapter(query: Query, private val messageType: String,
         else if (getItemViewType(position) == CHAT_IN_FILE) {
             getSnapshot(position)?.let { snapshot -> (holder as ChatFileInViewHolder).bind(snapshot) }
         }
+        else if (getItemViewType(position) == CHAT_OUT_VOICE) {
+            getSnapshot(position)?.let { snapshot -> (holder as ChatVoiceOutViewHolder).bind(snapshot) }
+        }
+        else if (getItemViewType(position) == CHAT_IN_VOICE) {
+            getSnapshot(position)?.let { snapshot -> (holder as ChatVoiceInViewHolder).bind(snapshot) }
+        }
     }
 
     private fun getChatType(position: Int): TypeEnum {
@@ -171,11 +190,15 @@ class ChatListRecyclerViewAdapter(query: Query, private val messageType: String,
             "image" -> TypeEnum.IMAGE
             "video" -> TypeEnum.VIDEO
             "file" -> TypeEnum.FILE
+            "voice" -> TypeEnum.VOICE
             else -> TypeEnum.TEXT
         }
     }
 
     override fun getItemViewType(position: Int): Int {
+        if (getSnapshot(position)?.get("senderUserId") == userId && getChatType(position) == TypeEnum.VOICE) {
+            return CHAT_OUT_VOICE
+        }
         if (getSnapshot(position)?.get("senderUserId") == userId && getChatType(position) == TypeEnum.FILE) {
             return CHAT_OUT_FILE
         }
@@ -187,6 +210,9 @@ class ChatListRecyclerViewAdapter(query: Query, private val messageType: String,
         }
         if (getSnapshot(position)?.get("senderUserId") == userId && getChatType(position) == TypeEnum.TEXT) {
             return CHAT_OUT
+        }
+        if (getSnapshot(position)?.get("senderUserId") != userId && getChatType(position) == TypeEnum.VOICE) {
+            return CHAT_IN_VOICE
         }
         if (getSnapshot(position)?.get("senderUserId") != userId && getChatType(position) == TypeEnum.FILE) {
             return CHAT_IN_FILE
@@ -204,7 +230,7 @@ class ChatListRecyclerViewAdapter(query: Query, private val messageType: String,
     }
 
     open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        open fun bind(chat: DocumentSnapshot) {}
+        open fun bind(snapshot: DocumentSnapshot) {}
     }
 
     class ChatInViewHolder(private val binding: FragmentChatItemInBinding, itemView: View) : ViewHolder(
@@ -470,6 +496,57 @@ class ChatListRecyclerViewAdapter(query: Query, private val messageType: String,
                     binding.imageViewProfile.setBackgroundResource(R.drawable.default_avatar)
                 }
             }
+        }
+    }
+
+    class ChatVoiceInViewHolder(private val binding: FragmentChatVoiceItemInBinding, itemView: View) : ViewHolder(
+        itemView
+    ) {
+        override fun bind(snapshot: DocumentSnapshot) {
+            val chat = snapshot.toObject<Chat>()!!
+            chat.id = snapshot.id
+            binding.textViewTimestamp.text = chat.timestamp?.toDate()
+                ?.let { RelativeDateAdapter(it).getHourMinuteFormat() }
+            FirebaseQueries.subscribeToUser(chat.senderUserId) {
+                binding.textViewName.text = it.name
+                if(it.profileImageUrl != ""){
+                    binding.imageViewProfile.load(it.profileImageUrl)
+                }else{
+                    binding.imageViewProfile.setBackgroundResource(R.drawable.default_avatar)
+                }
+            }
+            binding.voicePlayerView.setAudio(chat.mediaUrl)
+        }
+    }
+
+    class ChatVoiceOutViewHolder(private val binding: FragmentChatVoiceItemOutBinding, itemView: View, private val messageType: String) : ViewHolder(
+        itemView
+    ) {
+        override fun bind(snapshot: DocumentSnapshot) {
+            val chat = snapshot.toObject<Chat>()!!
+            FirebaseQueries.subscribeToMemberLastVisit(chat.messageId, chat.timestamp!!) { totalReadBy ->
+                if (totalReadBy == 0) {
+                    binding.textViewReadBy.text = ""
+                }
+                else {
+                    if (messageType == "personal") {
+                        binding.textViewReadBy.text = "Read"
+                    }
+                    else {
+                        binding.textViewReadBy.text = "Read By $totalReadBy"
+                    }
+                }
+            }
+            binding.textViewTimestamp.text = chat.timestamp?.toDate()
+                ?.let { RelativeDateAdapter(it).getHourMinuteFormat() }
+            FirebaseQueries.subscribeToUser(chat.senderUserId) {
+                if(it.profileImageUrl != ""){
+                    binding.imageViewProfile.load(it.profileImageUrl)
+                }else{
+                    binding.imageViewProfile.setBackgroundResource(R.drawable.default_avatar)
+                }
+            }
+            binding.voicePlayerView.setAudio(chat.mediaUrl)
         }
     }
 }
