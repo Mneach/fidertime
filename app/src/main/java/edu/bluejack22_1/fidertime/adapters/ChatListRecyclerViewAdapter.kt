@@ -57,7 +57,7 @@ const val CHAT_OUT_FILE = 8
 const val CHAT_IN_VOICE = 9
 const val CHAT_OUT_VOICE = 10
 
-class ChatListRecyclerViewAdapter(query: Query, private val messageType: String, private val context: Context) : FirestoreAdapter<ChatListRecyclerViewAdapter.ViewHolder>(query) {
+class ChatListRecyclerViewAdapter(query: Query, private val messageType: String, private val context: Context , private val notificationStatus : Boolean) : FirestoreAdapter<ChatListRecyclerViewAdapter.ViewHolder>(query) {
 
     private val userId = Firebase.auth.currentUser!!.uid
 
@@ -69,26 +69,28 @@ class ChatListRecyclerViewAdapter(query: Query, private val messageType: String,
     private fun createNotification(change: DocumentChange) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val chat = change.document.toObject<Chat>()
-            val intent = Intent(context.applicationContext, Notification::class.java)
-            val title = "You have a new chat"
-            val message = chat.chatText
-            intent.putExtra(titleExtra, title)
-            intent.putExtra(messageExtra, message)
+            if(chat.senderUserId != userId && notificationStatus){
+                val intent = Intent(context.applicationContext, Notification::class.java)
+                val title = "You have a new chat"
+                val message = chat.chatText
+                intent.putExtra(titleExtra, title)
+                intent.putExtra(messageExtra, message)
 
-            val pendingIntent = PendingIntent.getBroadcast(
-                context.applicationContext,
-                notificationId,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-            )
+                val pendingIntent = PendingIntent.getBroadcast(
+                    context.applicationContext,
+                    notificationId,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
 
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val time = Calendar.getInstance().timeInMillis
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                time,
-                pendingIntent
-            )
+                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                val time = Calendar.getInstance().timeInMillis
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    time,
+                    pendingIntent
+                )
+            }
         }
     }
 

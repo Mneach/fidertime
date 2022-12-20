@@ -14,7 +14,7 @@ import edu.bluejack22_1.fidertime.fragments.LinkListFragment
 import edu.bluejack22_1.fidertime.fragments.MediaListFragment
 import edu.bluejack22_1.fidertime.fragments.MemberListFragment
 
-class MessageGroupMediaPagerAdapter (fragmentManager: FragmentManager, lifecycle: Lifecycle, var messageId : String, var groupMemberIds : ArrayList<String>): FragmentStateAdapter(fragmentManager, lifecycle){
+class MessageGroupMediaPagerAdapter (fragmentManager: FragmentManager, lifecycle: Lifecycle, var messageId : String, var memberGroupIds : ArrayList<String>): FragmentStateAdapter(fragmentManager, lifecycle){
     override fun getItemCount(): Int {
         return 3
     }
@@ -26,7 +26,9 @@ class MessageGroupMediaPagerAdapter (fragmentManager: FragmentManager, lifecycle
         return when (position) {
             0 -> {
                 MemberListFragment(
-                    db.collection("users").whereIn(FieldPath.documentId() , groupMemberIds)
+                    db.collection("users").whereIn(FieldPath.documentId() , memberGroupIds),
+                    messageId,
+                    memberGroupIds
                 )
             }
             1 -> {

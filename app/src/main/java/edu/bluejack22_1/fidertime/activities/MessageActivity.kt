@@ -27,10 +27,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.adapters.ChatListRecyclerViewAdapter
-import edu.bluejack22_1.fidertime.common.FirebaseQueries
-import edu.bluejack22_1.fidertime.common.MarginItemDecoration
-import edu.bluejack22_1.fidertime.common.Permissions
-import edu.bluejack22_1.fidertime.common.RelativeDateAdapter
+import edu.bluejack22_1.fidertime.common.*
 import edu.bluejack22_1.fidertime.databinding.ActivityMessageBinding
 import edu.bluejack22_1.fidertime.models.Chat
 import edu.bluejack22_1.fidertime.models.Message
@@ -60,7 +57,7 @@ class MessageActivity : AppCompatActivity() {
         initializeActionBar()
         initializeAttachmentBox()
         initializeChatBox()
-        initializeRecyclerView()
+//        initializeRecyclerView()
         initializeRecorderView()
         initializeEditTextChat()
     }
@@ -297,9 +294,16 @@ class MessageActivity : AppCompatActivity() {
         recyclerView.addItemDecoration(MarginItemDecoration(40, LinearLayoutManager.VERTICAL))
         val query = Firebase.firestore.collection("chats").whereEqualTo("messageId", messageId)
             .orderBy("timestamp", Query.Direction.ASCENDING)
-        adapter = ChatListRecyclerViewAdapter(query, "personal", this)
-        recyclerView.adapter = adapter
+        FirebaseQueries.getMessageNotificationStatus(Utilities.getAuthFirebase().uid.toString(), messageId) { notificationStatus ->
+            adapter = ChatListRecyclerViewAdapter(query, "personal", this , notificationStatus.toBoolean())
+            recyclerView.adapter = adapter
+            adapter.startListening()
+            adapter.notifyDataSetChanged()
+            Log.d("recyle view" , "Show ? ")
+        }
     }
+
+
 
     private fun initializeActionBar() {
         FirebaseQueries.subscribeToMessage(messageId) {
@@ -381,10 +385,7 @@ class MessageActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        recyclerView.recycledViewPool.clear()
-        adapter.startListening()
-        recyclerView.recycledViewPool.clear()
-        adapter.notifyDataSetChanged()
+        initializeRecyclerView()
         FirebaseQueries.updateMemberLastVisit(messageId, userId)
         if (!Permissions.isStorageGranted(this)) {
             Permissions.requestStoragePermission(this)

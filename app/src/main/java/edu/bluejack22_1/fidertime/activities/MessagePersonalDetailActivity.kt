@@ -6,16 +6,22 @@ import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.FragmentManager
 import coil.load
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.adapters.MessagePersonalMediaPagerAdapter
 import edu.bluejack22_1.fidertime.adapters.ProfileMediaListPagerAdapter
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
+import edu.bluejack22_1.fidertime.common.RelativeDateAdapter
+import edu.bluejack22_1.fidertime.common.Utilities
 import edu.bluejack22_1.fidertime.databinding.ActivityMessagePersonalDetailBinding
 import edu.bluejack22_1.fidertime.databinding.FragmentProfileBinding
 import edu.bluejack22_1.fidertime.models.User
@@ -37,6 +43,7 @@ class MessagePersonalDetailActivity : AppCompatActivity() {
         FirebaseQueries.subscribeToUser(userData!!) {
             setUserData(it)
         }
+        setSwitchNotification(messageId)
     }
 
     private fun initializeTabs(messageId : String) {
@@ -58,17 +65,22 @@ class MessagePersonalDetailActivity : AppCompatActivity() {
         }.attach()
     }
 
-    private fun setUserData(it : User){
-        binding.name.text = it.name
-        binding.phoneNumber.text = it.phoneNumber
+    private fun setUserData(user : User){
+        binding.name.text = user.name
+        binding.phoneNumber.text = user.phoneNumber
 
-        binding.bio.text = it.bio
-        if(it.profileImageUrl != "" && it.profileImageUrl.isNotEmpty()){
-            binding.imageViewProfile.load(it.profileImageUrl)
+        binding.bio.text = user.bio
+        if(user.profileImageUrl != "" && user.profileImageUrl.isNotEmpty()){
+            binding.imageViewProfile.load(user.profileImageUrl)
         }else{
             binding.imageViewProfile.setBackgroundResource(R.drawable.default_avatar)
         }
-
+        binding.status.text = if (user.status == "offline") {
+            getString(R.string.last_seen).plus(" ") + user.lastSeenTimestamp?.toDate()
+                ?.let { RelativeDateAdapter(it).getRelativeString() }
+        } else {
+            user.status
+        }
         setActionBar()
     }
 
@@ -82,5 +94,21 @@ class MessagePersonalDetailActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
+    }
+
+    private fun setSwitchNotification(messageId : String){
+        val userId = Utilities.getAuthFirebase().uid.toString()
+        FirebaseQueries.getMessageNotificationStatus(userId , messageId){ notificationStatus ->
+            val switchNotification = binding.switchNotification
+            switchNotification.isChecked = notificationStatus.toBoolean()
+            switchNotification.setOnCheckedChangeListener { _, isChecked ->
+                FirebaseQueries.updateMessageNotificationStatus(userId, messageId , isChecked) {
+                    var message = "";
+                    if(isChecked) message = getString(R.string.On)
+                    else message = getString(R.string.Off)
+                    Toast.makeText(this , getString(R.string.notification).plus(" ").plus(message) , Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 }

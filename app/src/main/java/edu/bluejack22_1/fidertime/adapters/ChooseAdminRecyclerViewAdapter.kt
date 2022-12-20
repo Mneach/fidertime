@@ -13,22 +13,22 @@ import com.google.firebase.firestore.ktx.toObject
 import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.common.RelativeDateAdapter
+import edu.bluejack22_1.fidertime.databinding.FragmentChooseAdminBinding
+import edu.bluejack22_1.fidertime.databinding.FragmentContactItemBinding
 import edu.bluejack22_1.fidertime.databinding.FragmentMemberItemBinding
 import edu.bluejack22_1.fidertime.fragments.MemberListFragment
 import edu.bluejack22_1.fidertime.models.MessageMember
 import edu.bluejack22_1.fidertime.models.User
 
-class MemberRecycleViewAdapter(
-    query: Query,
-    private val currentUser: MessageMember,
-    private val fragment: MemberListFragment ,
-    private val messageId : String,
-    private val memberGroupIds : ArrayList<String>
-) : FirestoreAdapter<MemberRecycleViewAdapter.ViewHolder>(query) {
+class ChooseAdminRecyclerViewAdapter (query: Query) : FirestoreAdapter<ChooseAdminRecyclerViewAdapter.ViewHolder>(query) {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        val itemBinding = FragmentMemberItemBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
-        return ViewHolder(itemBinding , currentUser , fragment , messageId , memberGroupIds)
+        val itemBinding = FragmentChooseAdminBinding.inflate(
+            LayoutInflater.from(viewGroup.context),
+            viewGroup,
+            false
+        )
+        return ViewHolder(itemBinding)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
@@ -41,26 +41,20 @@ class MemberRecycleViewAdapter(
         }
     }
 
-    var onItemClick : ((String) -> Unit)? = null
+    var onItemClick: ((String) -> Unit)? = null
 
-    class ViewHolder(
-            private val itemBinding: FragmentMemberItemBinding,
-            private val currentUser : MessageMember,
-            private val fragment: MemberListFragment,
-            private val messageId: String,
-            private val memberGroupIds : ArrayList<String>
-        ) : RecyclerView.ViewHolder(itemBinding.root) {
+    class ViewHolder(private val itemBinding: FragmentChooseAdminBinding) : RecyclerView.ViewHolder(itemBinding.root) {
 
         fun bind(snapshot: DocumentSnapshot?) {
             val user = snapshot?.toObject<User>()!!
             user.id = snapshot.id
-            if(user.profileImageUrl.isNotEmpty()){
+            if (user.profileImageUrl.isNotEmpty()) {
                 itemBinding.imageViewProfile.load(user.profileImageUrl) {
                     crossfade(true)
                     crossfade(300)
                     placeholder(R.drawable.image_placeholder)
                 }
-            }else{
+            } else {
                 itemBinding.imageViewProfile.setBackgroundResource(R.drawable.default_avatar)
             }
 
@@ -70,26 +64,6 @@ class MemberRecycleViewAdapter(
                     ?.let { RelativeDateAdapter(it).getRelativeString() }
             } else {
                 user.status
-            }
-
-            // hide remove member
-            if(!currentUser.admin || user.id == currentUser.id){
-                itemBinding.removeMember.visibility = View.GONE
-            }else{
-                itemBinding.removeMember.setOnClickListener {
-                    FirebaseQueries.deleteMember(messageId , user.id , memberGroupIds){
-                        Toast.makeText(itemBinding.root.context , R.string.success_remove_member , Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-
-            // get user role
-            FirebaseQueries.getUserRole(messageId , user.id){
-                if(it.admin){
-                    itemBinding.role.text = itemBinding.root.context.getString(R.string.admin)
-                }else{
-                    itemBinding.role.text = itemBinding.root.context.getString(R.string.member)
-                }
             }
         }
     }
