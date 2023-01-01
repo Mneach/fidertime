@@ -28,10 +28,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.R
-import edu.bluejack22_1.fidertime.common.FirebaseQueries
-import edu.bluejack22_1.fidertime.common.NotificationHelper
-import edu.bluejack22_1.fidertime.common.RelativeDateAdapter
-import edu.bluejack22_1.fidertime.common.TypeEnum
+import edu.bluejack22_1.fidertime.common.*
 import edu.bluejack22_1.fidertime.databinding.FragmentChatFileItemInBinding
 import edu.bluejack22_1.fidertime.databinding.FragmentChatFileItemOutBinding
 import edu.bluejack22_1.fidertime.databinding.FragmentChatImageItemInBinding
@@ -213,7 +210,7 @@ class ChatListRecyclerViewAdapter(query: Query, private val messageType: String,
         override fun bind(snapshot: DocumentSnapshot) {
             val chat = snapshot.toObject<Chat>()!!
             chat.id = snapshot.id
-            binding.textViewChat.text = chat.chatText
+            RichTextHelper.linkRecognizer(itemView.context, binding.textViewChat, chat.chatText)
             binding.textViewTimestamp.text = chat.timestamp?.toDate()
                 ?.let { RelativeDateAdapter(it).getHourMinuteFormat() }
             FirebaseQueries.subscribeToUser(chat.senderUserId) {
@@ -232,7 +229,7 @@ class ChatListRecyclerViewAdapter(query: Query, private val messageType: String,
     ) {
         override fun bind(snapshot: DocumentSnapshot) {
             val chat = snapshot.toObject<Chat>()!!
-            binding.textViewChat.text = chat.chatText
+            RichTextHelper.linkRecognizer(itemView.context, binding.textViewChat, chat.chatText)
             FirebaseQueries.subscribeToMemberLastVisit(chat.messageId, chat.timestamp!!) { totalReadBy ->
                 if (totalReadBy == 0) {
                     binding.textViewReadBy.text = ""
