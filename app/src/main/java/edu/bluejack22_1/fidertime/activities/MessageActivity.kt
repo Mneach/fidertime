@@ -57,7 +57,7 @@ class MessageActivity : AppCompatActivity() {
         initializeActionBar()
         initializeAttachmentBox()
         initializeChatBox()
-        initializeRecyclerView()
+//        initializeRecyclerView()
         initializeRecorderView()
         initializeEditTextChat()
     }
@@ -301,9 +301,16 @@ class MessageActivity : AppCompatActivity() {
         recyclerView.addItemDecoration(MarginItemDecoration(40, LinearLayoutManager.VERTICAL))
         val query = Firebase.firestore.collection("chats").whereEqualTo("messageId", messageId)
             .orderBy("timestamp", Query.Direction.ASCENDING)
-        adapter = ChatListRecyclerViewAdapter(query, "personal", this)
-        recyclerView.adapter = adapter
+        FirebaseQueries.getMessageNotificationStatus(Utilities.getAuthFirebase().uid.toString(), messageId) { notificationStatus ->
+            adapter = ChatListRecyclerViewAdapter(query, "personal", this , notificationStatus.toBoolean())
+            recyclerView.adapter = adapter
+            adapter.startListening()
+            adapter.notifyDataSetChanged()
+            Log.d("recyle view" , "Show ? ")
+        }
     }
+
+
 
     private fun initializeActionBar() {
         FirebaseQueries.subscribeToMessage(messageId) {
@@ -385,10 +392,7 @@ class MessageActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        recyclerView.recycledViewPool.clear()
-        adapter.startListening()
-        recyclerView.recycledViewPool.clear()
-        adapter.notifyDataSetChanged()
+        initializeRecyclerView()
         FirebaseQueries.updateMemberLastVisit(messageId, userId)
         if (!Permissions.isStorageGranted(this)) {
             Permissions.requestStoragePermission(this)

@@ -123,17 +123,15 @@ class RegisterActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     val id = auth.currentUser?.uid
-
-                    val data = hashMapOf(
-                        "email" to email,
-                        "name" to name,
-                        "phoneNumber" to phoneNumber,
-                        "status" to "online",
-                        "lastSeenTimestamp" to Timestamp.now()
-                    )
+                    val userData = User()
+                    userData.email = email
+                    userData.name = name
+                    userData.phoneNumber = phoneNumber
+                    userData.status = "Online"
+                    userData.lastSeenTimestamp = Timestamp.now()
 
                     db.collection("users").document(id.toString())
-                        .set(data)
+                        .set(userData)
                         .addOnSuccessListener { documentReference ->
                             Toast.makeText(this , getString(R.string.register) , Toast.LENGTH_SHORT).show()
                             val intent = Intent(this , LoginActivity::class.java)

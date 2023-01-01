@@ -6,7 +6,6 @@ import android.net.Uri
 import android.util.Log
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.ListenerRegistration
@@ -128,6 +127,23 @@ class FirebaseQueries {
                     val message = snapshot.toObject<Message>()
                     message!!.id = snapshot.id
                     callback.invoke(message)
+                }
+            }
+        }
+
+        fun subscribeToMessageMember(messageId: String, callback: (message: ArrayList<MessageMember>) -> Unit) {
+            val messageMemberRef = Firebase.firestore.collection("messages").document(messageId).collection("members")
+            messageMemberRef.addSnapshotListener {value, e ->
+                if (e != null) {
+                    return@addSnapshotListener
+                }else{
+                    val messageMembers = ArrayList<MessageMember>()
+                    for (doc in value!!){
+                        val messageMember = doc.toObject<MessageMember>()
+                        messageMember.id = doc.id
+                        messageMembers.add(messageMember)
+                    }
+                    callback.invoke(messageMembers)
                 }
             }
         }
@@ -370,6 +386,73 @@ class FirebaseQueries {
                         callback.invoke(users)
                     }
                 }
+        }
+
+        fun getMessageNotificationStatus(userId: String, messageId: String, callback: (String) -> Unit){
+            val notificationRef = Firebase.firestore.collection("users").document(userId).collection("messages").document(messageId)
+            notificationRef.get().addOnSuccessListener { value ->
+                if (value != null && value.exists()) {
+                    val notification = value.get("notified")
+                    callback.invoke(notification.toString())
+                }
+            }
+        }
+
+        fun updateMessageNotificationStatus(userId: String, messageId: String, statusNotification : Boolean , callback: () -> Unit){
+            val notificationRef = Firebase.firestore.collection("users").document(userId).collection("messages").document(messageId)
+            notificationRef.update("notified" , statusNotification).addOnSuccessListener{
+                callback.invoke()
+            }
+        }
+
+        fun getUserRole(messageId : String, userId : String , callback: (messageMember : MessageMember) -> Unit){
+            val messageMemberRef = Firebase.firestore.collection("messages").document(messageId).collection("members").document(userId)
+            messageMemberRef.addSnapshotListener{ snapshot , e ->
+                if(e != null){
+                    return@addSnapshotListener
+                }else{
+                    val messageMember = snapshot?.toObject<MessageMember>()
+                    if (messageMember != null) {
+                        callback.invoke(messageMember)
+                    }
+                }
+            }
+        }
+
+        fun deleteMember(messageId : String, userId : String, memberGroupIds : ArrayList<String>, callback: () -> Unit){
+            val membersMessageRef = Firebase.firestore.collection("messages").document(messageId).collection("members").document(userId)
+            val messageRef = Firebase.firestore.collection("messages").document(messageId)
+            val userMessageRef = Firebase.firestore.collection("users").document(userId).collection("messages").document(messageId)
+            memberGroupIds.remove(userId)
+            // delete document member accourding to user id in sub collection members (collection messages)
+            membersMessageRef.delete().addOnSuccessListener {
+
+                // update field in collection messages
+
+                messageRef.update("members" , memberGroupIds)
+                // delete document user according to message id in sub collection messages (collection users)
+                userMessageRef.delete().addOnSuccessListener {
+                    callback.invoke()
+                }
+            }
+        }
+
+        fun assignAdminRole(messageId : String, userId : String, callback: () -> Unit){
+            val membersMessageRef = Firebase.firestore.collection("messages").document(messageId).collection("members").document(userId)
+            val adminStatus = true
+            membersMessageRef.update("admin" , adminStatus).addOnSuccessListener {
+                callback.invoke()
+            }
+        }
+
+        fun deleteGroupMessage(messageId : String, userId : String,callback: () -> Unit){
+            val messageRef = Firebase.firestore.collection("messages").document(messageId)
+            val userMessageRef = Firebase.firestore.collection("users").document(userId).collection("messages").document(messageId)
+            messageRef.delete().addOnSuccessListener {
+                userMessageRef.delete().addOnSuccessListener {
+                    callback.invoke()
+                }
+            }
         }
     }
 }

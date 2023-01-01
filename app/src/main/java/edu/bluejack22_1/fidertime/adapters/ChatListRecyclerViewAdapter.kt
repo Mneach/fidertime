@@ -58,25 +58,26 @@ const val CHAT_OUT_FILE = 8
 const val CHAT_IN_VOICE = 9
 const val CHAT_OUT_VOICE = 10
 
-class ChatListRecyclerViewAdapter(query: Query, private val messageType: String, private val context: Context) : FirestoreAdapter<ChatListRecyclerViewAdapter.ViewHolder>(query) {
+class ChatListRecyclerViewAdapter(query: Query, private val messageType: String, private val context: Context , private val notificationStatus : Boolean) : FirestoreAdapter<ChatListRecyclerViewAdapter.ViewHolder>(query) {
 
     private val userId = Firebase.auth.currentUser!!.uid
 
     override fun onDocumentAdded(change: DocumentChange) {
         super.onDocumentAdded(change)
+
         val chat = change.document.toObject<Chat>()
         var message = ""
-        if (chat.chatType == "text") {
-            message = chat.chatText
+        message = if (chat.chatType == "text") {
+            chat.chatText
         } else {
             if (chat.chatType == "image") {
-                message = "Sent an image"
-            }
-            else {
-                message = "Sent a " + chat.chatType
+                "Sent an image"
+            } else {
+                "Sent a " + chat.chatType
             }
         }
-        NotificationHelper.createNotification(context,"You have new message", message)
+
+        NotificationHelper.createNotification(context, "You have a new message", message)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {

@@ -65,7 +65,6 @@
     <string name="edit_profile">Edit Profile</string>
     <string name="edit">Edit</string>
     <string name="enter_message">Enter Message</string>
-    <string name="notification">Notification</string>
     <string name="register_your_phone_number">Register your phone number</string>
 
     <string name="search">Search</string>
@@ -73,6 +72,17 @@
     <string name="log_out">Log out</string>
     <string name="sent_an">Sent an</string>
     <string name="sent_a">Sent a</string>
+
+    <string name="success_remove_member">Successfully removed member</string>
+    <string name="success_leave_group">Successfully leave the group</string>
+
+    <!--  STATUS  -->
+    <string name="last_seen">Last Seen</string>
+    <string name="notification">Notification</string>
+    <string name="On">On</string>
+    <string name="Off">Off</string>
+    <string name="admin">Admin</string>
+    <string name="member">Member</string>
 
     <!-- TAB LAYOUT -->
     <string name="all">All</string>
@@ -87,6 +97,8 @@
     <string name="description">Description</string>s
     <string name="group_name">Group Name</string>
     <string name="group_description">Group Description</string>
+    <string name="leave_group">Leave Group</string>
+    <string name="choose_a_new_admin">Choose A New Admin</string>
 
 
 </resources>

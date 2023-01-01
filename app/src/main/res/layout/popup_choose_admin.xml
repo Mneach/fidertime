@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/secondary_color"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:id="@+id/parent_layout_2"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/choose_a_new_admin"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        android:gravity="center"
+        android:background="@drawable/choose_admin_title_background"
+        android:paddingVertical="20dp"
+        android:textStyle="bold"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_member"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:listitem="@layout/fragment_choose_admin"
+        />
+
+</LinearLayout>

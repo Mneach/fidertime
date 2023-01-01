@@ -55,6 +55,14 @@
                 android:textColor="@color/disable_color"
                 android:textSize="18sp"
                 />
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/disable_color"
+                android:textSize="14sp"
+                />
         </LinearLayout>
 
     </LinearLayout>
@@ -126,11 +134,12 @@
                     android:id="@+id/switch_notification"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:checked="true"
-                    app:thumbTint="@color/ascent_color"
-                    app:trackTint="@color/ascent_color_opacity_50"
-                    />
+                    android:thumb="@drawable/thumb"
+                    app:track="@drawable/track"
+                    app:showText="true"
+                    android:textColor="@color/black"
+                    android:textOn="on"
+                    android:textOff="off"/>
             </LinearLayout>
 
         </LinearLayout>
