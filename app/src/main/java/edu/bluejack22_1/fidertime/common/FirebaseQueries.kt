@@ -330,8 +330,8 @@ class FirebaseQueries {
             }
         }
 
-        fun updateUserStatus(userId: String, data: Map<String, Any>) {
-            Firebase.firestore.collection("users").document(userId).update(data)
+        fun updateUserStatus(userId: String, data: Map<String, Any>, callback: () -> Unit) {
+            Firebase.firestore.collection("users").document(userId).update(data).addOnSuccessListener { callback.invoke() }
         }
 
         fun subscribeToMemberGroup(messageIds: ArrayList<String> , callback: (messages: ArrayList<User>) -> Unit){

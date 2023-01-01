@@ -48,20 +48,22 @@ class ProfileFragment : Fragment() {
             val intent = Intent(context, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
-            FirebaseQueries.updateUserStatus(Firebase.auth.currentUser!!.uid, mapOf(Pair("status", "offline"), Pair("lastSeenTimestamp", Timestamp.now())))
-            val mainActivity : MainActivity = activity as MainActivity
+            FirebaseQueries.updateUserStatus(Firebase.auth.currentUser!!.uid, mapOf(Pair("status", "offline"), Pair("lastSeenTimestamp", Timestamp.now()))) {
+                val mainActivity : MainActivity = activity as MainActivity
 
-            if(GoogleSignIn.getLastSignedInAccount(mainActivity) != null){
-                // SIGN OUT IF USER LOGIN WITH GOOGLE
-                Utilities.getGoogleSignInClient(mainActivity).signOut().addOnCompleteListener{
+                if(GoogleSignIn.getLastSignedInAccount(mainActivity) != null){
+                    // SIGN OUT IF USER LOGIN WITH GOOGLE
+                    Utilities.getGoogleSignInClient(mainActivity).signOut().addOnCompleteListener{
+                        Utilities.getAuthFirebase().signOut()
+                        startActivity(intent)
+                    }
+                }else{
+                    // SIGN OUT IF USER LOGIN WITH FIREBASE
                     Utilities.getAuthFirebase().signOut()
                     startActivity(intent)
                 }
-            }else{
-                // SIGN OUT IF USER LOGIN WITH FIREBASE
-                Utilities.getAuthFirebase().signOut()
-                startActivity(intent)
             }
+
 
         }
 

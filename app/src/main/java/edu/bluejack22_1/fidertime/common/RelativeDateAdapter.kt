@@ -12,6 +12,14 @@ class RelativeDateAdapter(private val date: Date) {
         return DateUtils.getRelativeTimeSpanString(date.time, Date().time, DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE).toString()
     }
 
+    fun getFullRelativeString(): String {
+        return DateUtils.getRelativeTimeSpanString(date.time, Date().time, DateUtils.MINUTE_IN_MILLIS).toString()
+    }
+
+    fun getFullRelativeString(toDate: Date): String {
+        return DateUtils.getRelativeTimeSpanString(date.time, toDate.time, DateUtils.MINUTE_IN_MILLIS).toString()
+    }
+
     fun getHourMinuteFormat(): String {
         val formatter = SimpleDateFormat("HH:mm", Locale.ENGLISH)
         return formatter.format(date)

@@ -27,7 +27,7 @@ class AppController : Application(), LifecycleObserver {
     fun onMoveToForeground() {
         Log.d(TAG, "Foreground")
         if (userId != null) {
-            FirebaseQueries.updateUserStatus(userId!!, mapOf(Pair("status", "online")))
+            FirebaseQueries.updateUserStatus(userId!!, mapOf(Pair("status", "online"))) {}
         }
     }
 
@@ -35,7 +35,7 @@ class AppController : Application(), LifecycleObserver {
     fun onMoveToBackground() {
         Log.d(TAG, "Background")
         if (userId != null) {
-            FirebaseQueries.updateUserStatus(userId!!, mapOf(Pair("status", "offline"), Pair("lastSeenTimestamp", Timestamp.now())))
+            FirebaseQueries.updateUserStatus(userId!!, mapOf(Pair("status", "offline"), Pair("lastSeenTimestamp", Timestamp.now()))) {}
         }
     }
 

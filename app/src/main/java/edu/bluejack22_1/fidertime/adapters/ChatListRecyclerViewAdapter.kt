@@ -29,6 +29,7 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
+import edu.bluejack22_1.fidertime.common.NotificationHelper
 import edu.bluejack22_1.fidertime.common.RelativeDateAdapter
 import edu.bluejack22_1.fidertime.common.TypeEnum
 import edu.bluejack22_1.fidertime.databinding.FragmentChatFileItemInBinding
@@ -63,50 +64,22 @@ class ChatListRecyclerViewAdapter(query: Query, private val messageType: String,
 
     override fun onDocumentAdded(change: DocumentChange) {
         super.onDocumentAdded(change)
-        createNotification(change)
-    }
-
-    private fun createNotification(change: DocumentChange) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val chat = change.document.toObject<Chat>()
-            val intent = Intent(context.applicationContext, Notification::class.java)
-            val title = "You have a new chat"
-            val message = chat.chatText
-            intent.putExtra(titleExtra, title)
-            intent.putExtra(messageExtra, message)
-
-            val pendingIntent = PendingIntent.getBroadcast(
-                context.applicationContext,
-                notificationId,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-            )
-
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val time = Calendar.getInstance().timeInMillis
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                time,
-                pendingIntent
-            )
+        val chat = change.document.toObject<Chat>()
+        var message = ""
+        if (chat.chatType == "text") {
+            message = chat.chatText
+        } else {
+            if (chat.chatType == "image") {
+                message = "Sent an image"
+            }
+            else {
+                message = "Sent a " + chat.chatType
+            }
         }
-    }
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "New chat channel"
-            val description = "Fire when new chat received"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(channelId, name, importance)
-            channel.description = description
-            val notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
+        NotificationHelper.createNotification(context,"You have new message", message)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        createNotificationChannel()
         if (viewType == CHAT_OUT) {
             val binding = FragmentChatItemOutBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
             return ChatOutViewHolder(binding, binding.root, messageType)

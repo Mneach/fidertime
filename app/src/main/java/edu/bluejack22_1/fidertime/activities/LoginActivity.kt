@@ -24,7 +24,7 @@ import edu.bluejack22_1.fidertime.models.User
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var auth : FirebaseAuth
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,108 +33,114 @@ class LoginActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        if(Utilities.getAuthFirebase().uid != null){
-            val intent = Intent(this , MainActivity::class.java)
+        if (Utilities.getAuthFirebase().uid != null) {
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
 
-        binding.tvToRegister.setOnClickListener(View.OnClickListener{
+        binding.tvToRegister.setOnClickListener(View.OnClickListener {
             startActivity(
-                Intent(this , RegisterActivity::class.java)
+                Intent(this, RegisterActivity::class.java)
             )
         })
 
-        binding.buttonLogin.setOnClickListener{
+        binding.buttonLogin.setOnClickListener {
             val email = binding.email.text.toString()
             val password = binding.password.text.toString()
 
-            if(email.isEmpty()){
+            if (email.isEmpty()) {
                 binding.email.error = getString(R.string.email_null_validation)
                 binding.email.requestFocus()
                 return@setOnClickListener
-            }else if(password.isEmpty()){
+            } else if (password.isEmpty()) {
                 binding.password.error = getString(R.string.password_null_validation)
                 binding.password.requestFocus()
                 return@setOnClickListener
             }
-            login(email , password)
+            login(email, password)
 
         }
 
-        binding.buttonLoginGoogle.setOnClickListener{
+        binding.buttonLoginGoogle.setOnClickListener {
             signInGoogle()
         }
     }
 
-    private fun signInGoogle(){
+    private fun signInGoogle() {
         val signInIntent = Utilities.getGoogleSignInClient(this).signInIntent
         launcher.launch(signInIntent)
     }
 
-    private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        result ->
-            if(result.resultCode == Activity.RESULT_OK){
+    private val launcher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 handleResult(task)
             }
-    }
+        }
 
-    private fun handleResult(task : Task<GoogleSignInAccount>){
-        if(task.isSuccessful){
-            val account : GoogleSignInAccount? = task.result
-            if(account != null){
+    private fun handleResult(task: Task<GoogleSignInAccount>) {
+        if (task.isSuccessful) {
+            val account: GoogleSignInAccount? = task.result
+            if (account != null) {
                 updateUI(account)
             }
-        }else{
-            Toast.makeText(this , task.exception.toString() , Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, task.exception.toString(), Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun updateUI(account : GoogleSignInAccount){
-        val credential = GoogleAuthProvider.getCredential(account.idToken , null)
-        auth.signInWithCredential(credential).addOnCompleteListener{
-            if(it.isSuccessful){
-                var intent = Intent(this , MainActivity::class.java)
+    private fun updateUI(account: GoogleSignInAccount) {
+        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+        auth.signInWithCredential(credential).addOnCompleteListener {
+            if (it.isSuccessful) {
+                var intent = Intent(this, MainActivity::class.java)
                 val userId = Utilities.getAuthFirebase().uid.toString()
 
                 FirebaseQueries.getUserById(userId) { userFromDB ->
-                    if(userFromDB.id != ""){
+                    if (userFromDB.id != "") {
                         // goto main page if user already have account
                         startActivity(intent)
-                    }else{
+                    } else {
                         // register phone number if user didn't have account
-                        intent = Intent(this , RegisterPhoneNumberActivity::class.java)
-                        val user : User = userFromDB
+                        intent = Intent(this, RegisterPhoneNumberActivity::class.java)
+                        val user: User = userFromDB
                         user.id = Utilities.getAuthFirebase().uid.toString()
                         user.email = account.email.toString()
                         user.name = account.displayName.toString()
                         user.profileImageUrl = account.photoUrl.toString()
-                        intent.putExtra("GoogleLoginData" , user)
+                        intent.putExtra("GoogleLoginData", user)
                         startActivity(intent)
                     }
                 }
 
-            }else{
-                Toast.makeText(this , it.exception.toString() , Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun login(email: String , password : String){
-        auth.signInWithEmailAndPassword(email , password)
+    private fun login(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
-                if(task.isSuccessful){
-                    val intent = Intent(this , MainActivity::class.java)
+                if (task.isSuccessful) {
+                    val intent = Intent(this, MainActivity::class.java)
                     resetForm()
-                    FirebaseQueries.updateUserStatus(task.result.user!!.uid, mapOf(Pair("status", "online")))
-                    startActivity(intent)
-                }else{
-                    Toast.makeText(this , getString(R.string.invalid_credential) , Toast.LENGTH_SHORT).show()
+                    FirebaseQueries.updateUserStatus(
+                        task.result.user!!.uid,
+                        mapOf(Pair("status", "online"))
+                    ) {
+
+                        startActivity(intent)
+                    }
+                } else {
+                    Toast.makeText(this, getString(R.string.invalid_credential), Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
     }
 
-    private fun resetForm(){
+    private fun resetForm() {
         binding.email.text.clear()
         binding.password.text.clear()
     }

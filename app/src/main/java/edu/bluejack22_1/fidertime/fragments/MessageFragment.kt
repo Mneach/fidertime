@@ -17,6 +17,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.R
+import edu.bluejack22_1.fidertime.activities.BotMessageActivity
 import edu.bluejack22_1.fidertime.activities.MessageActivity
 import edu.bluejack22_1.fidertime.adapters.MessageListPagerAdapter
 import edu.bluejack22_1.fidertime.adapters.PinnedMessageListRecyclerViewAdapter
@@ -39,7 +40,16 @@ class MessageFragment() : Fragment() {
         _binding = FragmentMessageBinding.inflate(inflater, container, false)
         initializeTabs()
         initializeRecyclerView()
+        initializeMessageBotButton()
         return binding.root
+    }
+
+    private fun initializeMessageBotButton() {
+        binding.messageBotButton.setOnClickListener {
+            val intent = Intent(context, BotMessageActivity::class.java)
+            intent.putExtra("messageId", "bot")
+            startActivity(intent)
+        }
     }
 
     private fun initializeRecyclerView() {

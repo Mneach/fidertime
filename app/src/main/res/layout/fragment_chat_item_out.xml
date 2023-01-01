@@ -44,8 +44,7 @@
                 android:id="@+id/text_view_chat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxWidth="128dp"
-                android:text="Haii dsfwqrkl 32-40in asdfj23j asdfadsk;dfjiawefh"/>
+                android:maxWidth="128dp"/>
 
         </androidx.cardview.widget.CardView>
 

@@ -23,7 +23,6 @@
             android:id="@+id/text_view_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tegar Abdullah"
             android:layout_marginBottom="8dp"/>
 
         <LinearLayout
@@ -45,16 +44,14 @@
                     android:id="@+id/text_view_chat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:maxWidth="128dp"
-                    android:text="Haii dsfwqrkl 32-40in asdfj23j asdfadsk;dfjiawefh"/>
+                    android:maxWidth="128dp"/>
 
             </androidx.cardview.widget.CardView>
 
             <TextView
                 android:id="@+id/text_view_timestamp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="15:32"/>
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 

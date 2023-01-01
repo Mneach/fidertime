@@ -27,10 +27,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.adapters.ChatListRecyclerViewAdapter
-import edu.bluejack22_1.fidertime.common.FirebaseQueries
-import edu.bluejack22_1.fidertime.common.MarginItemDecoration
-import edu.bluejack22_1.fidertime.common.Permissions
-import edu.bluejack22_1.fidertime.common.RelativeDateAdapter
+import edu.bluejack22_1.fidertime.common.*
 import edu.bluejack22_1.fidertime.databinding.ActivityMessageBinding
 import edu.bluejack22_1.fidertime.models.Chat
 import edu.bluejack22_1.fidertime.models.Message
@@ -265,6 +262,10 @@ class MessageActivity : AppCompatActivity() {
         val sendButton = binding.buttonSend
         val editTextChat = binding.editTextChat
 
+        editTextChat.setOnClickListener {
+            scrollToBottom()
+        }
+
         sendButton.setOnClickListener {
             if (editTextChat.text.isNotEmpty()) {
                 val chat = Chat(
@@ -286,10 +287,13 @@ class MessageActivity : AppCompatActivity() {
     }
 
     private fun scrollToBottom() {
-        recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
+        recyclerView.postDelayed({
+            recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
+        }, 500)
     }
 
     private fun initializeRecyclerView() {
+        NotificationHelper.createNotificationChannel(this)
         recyclerView = binding.recyclerViewChats
         val layoutManager = LinearLayoutManager(this)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
