@@ -83,6 +83,31 @@ class FirebaseQueries {
             }
         }
 
+        fun subscribeToUserByUsername(username: String, callback: (user: User) -> Unit) {
+            val userRef = Firebase.firestore.collection("users").whereEqualTo("username", username)
+            userRef.addSnapshotListener {snapshot, e ->
+                if (e != null) {
+                    return@addSnapshotListener
+                }
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val users = ArrayList<User>()
+                    for(doc in snapshot){
+                        if(doc.id != Utilities.getAuthFirebase().uid){
+                            val user = doc.toObject<User>()
+                            user.id = doc.id
+                            users.add(user)
+                        }
+                    }
+                    if (users.size < 1) {
+                        callback.invoke(User())
+                    }
+                    else {
+                        callback.invoke(users[0])
+                    }
+                }
+            }
+        }
+
         fun subscribeToUser(userId: String, callback: (user: User) -> Unit) {
             val userRef = Firebase.firestore.collection("users").document(userId)
             userRef.addSnapshotListener {snapshot, e ->

@@ -99,6 +99,9 @@
     <string name="group_description">Group Description</string>
     <string name="leave_group">Leave Group</string>
     <string name="choose_a_new_admin">Choose A New Admin</string>
+    <string name="username">Username</string>
+    <string name="name_contains_space_validation">Username can not contains space</string>
+    <string name="username_unique_validation">Username must be unique</string>
 
 
 </resources>

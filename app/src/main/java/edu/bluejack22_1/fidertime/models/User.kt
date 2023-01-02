@@ -15,5 +15,6 @@ data class User(
     var profileImageUrl: String = "",
     var status: String = "",
     var stories: ArrayList<String> = arrayListOf(),
-    var lastSeenTimestamp: Timestamp? = null
+    var lastSeenTimestamp: Timestamp? = null,
+    var username: String = ""
 ) : Serializable

@@ -21,6 +21,7 @@ import edu.bluejack22_1.fidertime.adapters.MessagePersonalMediaPagerAdapter
 import edu.bluejack22_1.fidertime.adapters.ProfileMediaListPagerAdapter
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.common.RelativeDateAdapter
+import edu.bluejack22_1.fidertime.common.RichTextHelper
 import edu.bluejack22_1.fidertime.common.Utilities
 import edu.bluejack22_1.fidertime.databinding.ActivityMessagePersonalDetailBinding
 import edu.bluejack22_1.fidertime.databinding.FragmentProfileBinding
@@ -36,14 +37,22 @@ class MessagePersonalDetailActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val userData = intent.getStringExtra("userId")
-        val messageId = intent.getStringExtra("messageId").toString()
+        val messageId = intent.getStringExtra("messageId")
+        val username = intent.getStringExtra("username")
 
-
-        initializeTabs(messageId)
-        FirebaseQueries.subscribeToUser(userData!!) {
-            setUserData(it)
+        if (username != null) {
+            FirebaseQueries.subscribeToUserByUsername(username) {
+                setUserData(it)
+            }
         }
-        setSwitchNotification(messageId)
+        else if (userData != null && messageId != null) {
+            initializeTabs(messageId)
+            FirebaseQueries.subscribeToUser(userData) {
+                setUserData(it)
+            }
+            setSwitchNotification(messageId)
+        }
+
     }
 
     private fun initializeTabs(messageId : String) {
@@ -69,7 +78,8 @@ class MessagePersonalDetailActivity : AppCompatActivity() {
         binding.name.text = user.name
         binding.phoneNumber.text = user.phoneNumber
 
-        binding.bio.text = user.bio
+
+        RichTextHelper.linkAndMentionRecognizer(this, binding.bio, user.bio)
         if(user.profileImageUrl != "" && user.profileImageUrl.isNotEmpty()){
             binding.imageViewProfile.load(user.profileImageUrl)
         }else{

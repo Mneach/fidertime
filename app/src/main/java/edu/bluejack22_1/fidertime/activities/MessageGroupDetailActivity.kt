@@ -12,6 +12,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.adapters.MessageGroupMediaPagerAdapter
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
+import edu.bluejack22_1.fidertime.common.RichTextHelper
 import edu.bluejack22_1.fidertime.common.Utilities
 import edu.bluejack22_1.fidertime.databinding.ActivityMessageGroupDetailBinding
 import edu.bluejack22_1.fidertime.fragments.ChooseAdminFragment
@@ -71,7 +72,7 @@ class MessageGroupDetailActivity : AppCompatActivity() {
         binding.countMember.text = message.members.size.toString().plus(" Members, ")
         binding.countOnline.text = onlineMember.toString().plus(" Online")
         binding.groupName.text = message.groupName
-        binding.groupDescription.text = message.groupDescription
+        RichTextHelper.linkAndMentionRecognizer(this, binding.groupDescription, message.groupDescription)
         setActionBar()
     }
 

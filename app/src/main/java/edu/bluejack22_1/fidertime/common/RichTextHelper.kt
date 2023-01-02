@@ -17,10 +17,10 @@ import java.util.regex.Pattern
 
 class RichTextHelper {
     companion object {
-        fun linkRecognizer(context: Context, textView: TextView, text: String) {
+        fun linkAndMentionRecognizer(context: Context, textView: TextView, text: String) {
             val spanned = SpannableString(text)
             val linkMatcher = Patterns.WEB_URL.matcher(text)
-            val mentionMatcher = Pattern.compile("\\b@\\b").matcher(text)
+            val mentionMatcher = Pattern.compile("(@[A-Za-z0-9_-]+)").matcher(text)
             var matchStart: Int
             var matchEnd: Int
 
@@ -60,11 +60,12 @@ class RichTextHelper {
                 matchStart = mentionMatcher.start(1)
                 matchEnd = mentionMatcher.end()
 
+                val username = text.substring(matchStart + 1, matchEnd)
+
                 val clickableSpan: ClickableSpan = object : ClickableSpan() {
                     override fun onClick(widget: View) {
                         val intent = Intent(context, MessagePersonalDetailActivity::class.java)
-                        intent.putExtra("userId", "mIylyKTtsfZZo5VbSXzVwgXMyou1")
-                        intent.putExtra("messageId", "7ysug3cwQOhq7qaJZifP")
+                        intent.putExtra("username", username)
                         context.startActivity(intent)
                     }
 

@@ -14,6 +14,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.R
+import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.databinding.ActivityRegisterBinding
 import edu.bluejack22_1.fidertime.models.User
 
@@ -36,6 +37,7 @@ class RegisterActivity : AppCompatActivity() {
         binding.buttonRegister.setOnClickListener{
             val email = binding.email.text.toString()
             val name = binding.name.text.toString()
+            val username = binding.username.text.toString()
             val phoneNumber = binding.phoneNumber.text.toString()
             val password = binding.password.text.toString()
 
@@ -61,6 +63,20 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            if(username.isEmpty()){
+                binding.username.error = getString(R.string.name_null_validation)
+                binding.username.requestFocus()
+                return@setOnClickListener
+            }else if(username.length < 5){
+                binding.username.error = getString(R.string.name_length_validation)
+                binding.username.requestFocus()
+                return@setOnClickListener
+            }else if(username.contains(" ")) {
+                binding.username.error = getString(R.string.name_contains_space_validation)
+                binding.username.requestFocus()
+                return@setOnClickListener
+            }
+
             // PHONE NUMBER VALIDATION
             if(phoneNumber.isEmpty()){
                 binding.phoneNumber.error = getString(R.string.phone_number_null_validation)
@@ -82,17 +98,20 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            checkDataToFirebase(email , name , phoneNumber , password)
+
+
+            checkDataToFirebase(email , name , username, phoneNumber , password)
         }
     }
 
-    private fun checkDataToFirebase(email : String, name : String, phoneNumber : String, password : String){
+    private fun checkDataToFirebase(email : String, name : String, username: String, phoneNumber : String, password : String){
         val db = Firebase.firestore
         db.collection("users")
             .get()
             .addOnSuccessListener{ result ->
                 var checkName = false
                 var checkPhoneNumber = false
+                var checkUsername = false
                 for(doc in result){
                     val user = doc.toObject<User>()
                     user.id = doc.id
@@ -100,6 +119,8 @@ class RegisterActivity : AppCompatActivity() {
                         checkPhoneNumber = true
                     }else if(user.name == name){
                         checkName = true
+                    }else if(user.username == username) {
+                        checkUsername = true
                     }
                 }
 
@@ -107,6 +128,8 @@ class RegisterActivity : AppCompatActivity() {
                     Toast.makeText(this , getString(R.string.phone_number_unique_validation) , Toast.LENGTH_SHORT).show()
                 }else if(checkName){
                     Toast.makeText(this , getString(R.string.name_unique_validation) , Toast.LENGTH_SHORT).show()
+                }else if(checkUsername){
+                    Toast.makeText(this , getString(R.string.username_unique_validation) , Toast.LENGTH_SHORT).show()
                 }else{
                     registerUser(email , name , phoneNumber , password)
                 }

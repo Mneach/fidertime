@@ -1,26 +1,17 @@
 package edu.bluejack22_1.fidertime.adapters
 
 import FirestoreAdapter
-import android.app.AlarmManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.DocumentSnapshot
@@ -41,7 +32,6 @@ import edu.bluejack22_1.fidertime.databinding.FragmentChatVoiceItemInBinding
 import edu.bluejack22_1.fidertime.databinding.FragmentChatVoiceItemOutBinding
 import edu.bluejack22_1.fidertime.models.*
 import java.text.DecimalFormat
-import java.util.Calendar
 
 
 const val CHAT_IN = 1
@@ -210,7 +200,7 @@ class ChatListRecyclerViewAdapter(query: Query, private val messageType: String,
         override fun bind(snapshot: DocumentSnapshot) {
             val chat = snapshot.toObject<Chat>()!!
             chat.id = snapshot.id
-            RichTextHelper.linkRecognizer(itemView.context, binding.textViewChat, chat.chatText)
+            RichTextHelper.linkAndMentionRecognizer(itemView.context, binding.textViewChat, chat.chatText)
             binding.textViewTimestamp.text = chat.timestamp?.toDate()
                 ?.let { RelativeDateAdapter(it).getHourMinuteFormat() }
             FirebaseQueries.subscribeToUser(chat.senderUserId) {
@@ -229,7 +219,7 @@ class ChatListRecyclerViewAdapter(query: Query, private val messageType: String,
     ) {
         override fun bind(snapshot: DocumentSnapshot) {
             val chat = snapshot.toObject<Chat>()!!
-            RichTextHelper.linkRecognizer(itemView.context, binding.textViewChat, chat.chatText)
+            RichTextHelper.linkAndMentionRecognizer(itemView.context, binding.textViewChat, chat.chatText)
             FirebaseQueries.subscribeToMemberLastVisit(chat.messageId, chat.timestamp!!) { totalReadBy ->
                 if (totalReadBy == 0) {
                     binding.textViewReadBy.text = ""

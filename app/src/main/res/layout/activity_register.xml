@@ -66,6 +66,18 @@
                 tools:ignore="TextFields" />
 
             <EditText
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/username"
+                android:textColor="@color/white"
+                android:textColorHint="@color/hint_color"
+                android:paddingBottom="20dp"
+                android:layout_marginTop="10dp"
+                android:inputType="textEmailAddress"
+                tools:ignore="TextFields" />
+
+            <EditText
                 android:id="@+id/phoneNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
