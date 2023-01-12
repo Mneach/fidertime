@@ -116,6 +116,7 @@ class MessageListFragment(
 //                        adapter.updateData(userData)
                 }else{
                     messageData.clear()
+                    messageData.addAll(messages)
                     updateAdapter()
                 }
             }

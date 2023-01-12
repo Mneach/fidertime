@@ -466,7 +466,7 @@ class MessageActivity : AppCompatActivity() {
     private fun setNameAndProfile(message: Message) {
         if (message.messageType == "group") {
             binding.toolbarMessage.textViewTitle.text = message.groupName
-            binding.toolbarMessage.textViewSubtitle.text = "${message.members.size}".plus(" ").plus(R.string.members)
+            binding.toolbarMessage.textViewSubtitle.text = "${message.members.size}".plus(" ").plus(getString(R.string.members))
             binding.toolbarMessage.imageViewProfile.load(message.groupImageUrl)
             setActionBar()
             binding.toolbarMessage.actionBarProfile.setOnClickListener{

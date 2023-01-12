@@ -30,7 +30,7 @@
     <string name="authentication_failed">otentikasi gagal</string>
     <string name="invalid_credential">Kredensial tidak valid</string>
     <string name="success_register">berhasil mendaftar</string>
-    <string name="cancel">gagal</string>
+    <string name="cancel">Kembali</string>
     <string name="edit_profile">ubah profil</string>
     <string name="edit">ubah</string>
     <string name="enter_message">masukan pesan</string>

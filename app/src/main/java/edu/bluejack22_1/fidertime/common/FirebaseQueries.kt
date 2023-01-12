@@ -222,7 +222,7 @@ class FirebaseQueries {
             val storageReference = FirebaseStorage.getInstance().getReference(user.email + "/images/" + imageName)
 
             var progressDialog = ProgressDialog(context)
-            progressDialog.setTitle("Please Wait...")
+            progressDialog.setTitle(context.getString(edu.bluejack22_1.fidertime.R.string.please_wait))
             progressDialog.show()
 
             storageReference.putFile(filePath)
@@ -238,7 +238,7 @@ class FirebaseQueries {
                 }
                 .addOnProgressListener {
                     var currentProgress = (100.0 * it.bytesTransferred) / it.totalByteCount
-                    progressDialog.setMessage("Progress ${currentProgress.toInt()}%")
+                    progressDialog.setMessage(context.getString(edu.bluejack22_1.fidertime.R.string.progress) +" ${currentProgress.toInt()}%")
                 }
         }
 
@@ -250,14 +250,13 @@ class FirebaseQueries {
             val storageReference = FirebaseStorage.getInstance().getReference(userId + "/" + type + "s/" + fileName)
 
             var progressDialog = ProgressDialog(context)
-            progressDialog.setTitle("Please Wait...")
+            progressDialog.setTitle(context.getString(edu.bluejack22_1.fidertime.R.string.please_wait))
             progressDialog.show()
 
             storageReference.putFile(filePath)
                 .addOnSuccessListener { task ->
                     task.storage.downloadUrl.addOnSuccessListener { imageUrl ->
                         progressDialog.dismiss()
-                        Log.d("Image Url = " , imageUrl.toString())
                         callback.invoke(imageUrl.toString())
                     }
                 }
@@ -266,7 +265,7 @@ class FirebaseQueries {
                 }
                 .addOnProgressListener {
                     var currentProgress = (100.0 * it.bytesTransferred) / it.totalByteCount
-                    progressDialog.setMessage("Progress ${currentProgress.toInt()}%")
+                    progressDialog.setMessage(context.getString(edu.bluejack22_1.fidertime.R.string.progress) + " ${currentProgress.toInt()}%")
                 }
         }
 
