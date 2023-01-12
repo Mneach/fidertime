@@ -46,6 +46,7 @@ class MessageListRecyclerViewAdapter(query: Query) : FirestoreAdapter<MessageLis
             val messageItem = snapshot!!.toObject<Message>()!!
             messageItem.id = snapshot.id
             itemBinding.textViewUnreadChatCount.visibility = View.GONE
+            itemBinding.imageViewProfile.setImageDrawable(null)
             if (messageItem.lastChatType == "text") {
                 itemBinding.textViewLastChat.text = messageItem.lastChatText
             } else {
