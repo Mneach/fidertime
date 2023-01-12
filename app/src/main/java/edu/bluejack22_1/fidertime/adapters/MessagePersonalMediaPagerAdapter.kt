@@ -1,5 +1,6 @@
 package edu.bluejack22_1.fidertime.adapters
 
+import android.provider.MediaStore.Audio.Media
 import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -26,7 +27,7 @@ class MessagePersonalMediaPagerAdapter (fragmentManager: FragmentManager, lifecy
         return when (position) {
             0 -> {
                 MediaListFragment(
-                    db.collection("media").whereEqualTo("messageId", messageId).whereEqualTo("type" , "image").orderBy("timestamp", Query.Direction.DESCENDING)
+                    db.collection("media").whereEqualTo("messageId", messageId).whereIn("type" , listOf("image" , "video")).orderBy("timestamp", Query.Direction.DESCENDING)
                 )
             }
             1 -> {
@@ -41,7 +42,7 @@ class MessagePersonalMediaPagerAdapter (fragmentManager: FragmentManager, lifecy
             }
             else -> {
                 MediaListFragment(
-                    db.collection("media").whereEqualTo("messageId", messageId).whereEqualTo("type" , "link").orderBy("timestamp", Query.Direction.DESCENDING)
+                    db.collection("media").whereEqualTo("messageId", messageId).whereIn("type" , listOf("image" , "video")).orderBy("timestamp", Query.Direction.DESCENDING)
                 )
             }
         }

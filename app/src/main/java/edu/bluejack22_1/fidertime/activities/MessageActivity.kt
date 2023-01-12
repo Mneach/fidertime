@@ -12,6 +12,7 @@ import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.util.Patterns
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -30,6 +31,7 @@ import edu.bluejack22_1.fidertime.adapters.ChatListRecyclerViewAdapter
 import edu.bluejack22_1.fidertime.common.*
 import edu.bluejack22_1.fidertime.databinding.ActivityMessageBinding
 import edu.bluejack22_1.fidertime.models.Chat
+import edu.bluejack22_1.fidertime.models.Media
 import edu.bluejack22_1.fidertime.models.Message
 import edu.bluejack22_1.fidertime.models.User
 import java.io.File
@@ -46,6 +48,9 @@ class MessageActivity : AppCompatActivity() {
     private lateinit var recordingPath: String
     private var pinned = false
     private val userId = Firebase.auth.currentUser!!.uid
+    var isLoading = false
+    val LIMIT : Long = 5
+    var prevSize : Long = 0;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -277,6 +282,7 @@ class MessageActivity : AppCompatActivity() {
                     userId,
                     Timestamp.now()
                 )
+                sendLink(editTextChat.text.toString())
                 editTextChat.text.clear()
                 FirebaseQueries.sendChatText(chat) {
                     scrollToBottom()
@@ -286,10 +292,41 @@ class MessageActivity : AppCompatActivity() {
         }
     }
 
+    private fun sendLink(text: String){
+        val linkMatcher = Patterns.WEB_URL.matcher(text)
+        var matchStart: Int
+        var matchEnd: Int
+        var links : ArrayList<Media> = arrayListOf()
+        while(linkMatcher.find()){
+            matchStart = linkMatcher.start(1)
+            matchEnd = linkMatcher.end()
+
+            var url = text.substring(matchStart, matchEnd)
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "https://$url"
+            }
+            var media = Media()
+            media.messageId = messageId
+            media.senderUserId = Utilities.getAuthFirebase().uid.toString()
+            media.type = "link"
+            media.timestamp = Timestamp.now()
+            media.name = url
+            media.url = url
+
+            links.add(media)
+        }
+
+        if(links.isNotEmpty()){
+            FirebaseQueries.addLinks(links)
+        }
+    }
+
     private fun scrollToBottom() {
-        recyclerView.postDelayed({
-            recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
-        }, 500)
+        if(adapter.itemCount != 0){
+            recyclerView.postDelayed({
+                recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
+            }, 500)
+        }
     }
 
     private fun initializeRecyclerView() {
@@ -301,12 +338,23 @@ class MessageActivity : AppCompatActivity() {
         recyclerView.addItemDecoration(MarginItemDecoration(40, LinearLayoutManager.VERTICAL))
         val query = Firebase.firestore.collection("chats").whereEqualTo("messageId", messageId)
             .orderBy("timestamp", Query.Direction.ASCENDING)
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                Log.d("dy = " , dy.toString())
+                if(dy < 0){
+                    Log.d("current child" , (recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition().toString())
+                    if((recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition() == 0){
+                        Log.d("udah sampe" , "udah sampe beneran")
+                        // LOAD MORE
+                    }
+                }
+            }
+        })
         FirebaseQueries.getMessageNotificationStatus(Utilities.getAuthFirebase().uid.toString(), messageId) { notificationStatus ->
-            adapter = ChatListRecyclerViewAdapter(query, "personal", this , notificationStatus.toBoolean())
+            adapter = ChatListRecyclerViewAdapter(query.limitToLast(12), "personal", this , notificationStatus.toBoolean())
             recyclerView.adapter = adapter
             adapter.startListening()
             adapter.notifyDataSetChanged()
-            Log.d("recyle view" , "Show ? ")
         }
     }
 

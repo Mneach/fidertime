@@ -31,9 +31,10 @@ class ProfileMediaListPagerAdapter (fragmentManager: FragmentManager, lifecycle:
                 )
             }
             1 -> {
-                FileListFragment(
-                    db.collection("media").whereEqualTo("senderUserId", userId).whereEqualTo("type" , "file").orderBy("timestamp", Query.Direction.DESCENDING)
-                )
+                FileListFragment(Firebase.firestore.collection("media")
+                    .whereEqualTo("senderUserId", userId)
+                    .whereEqualTo("type" , "file")
+                    .orderBy("timestamp", Query.Direction.DESCENDING))
             }
             2 -> {
                 LinkListFragment(

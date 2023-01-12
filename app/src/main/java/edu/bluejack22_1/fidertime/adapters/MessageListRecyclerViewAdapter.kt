@@ -1,6 +1,5 @@
 package edu.bluejack22_1.fidertime.adapters
 
-import FirestoreAdapter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -9,8 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.AggregateSource
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -18,9 +15,11 @@ import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.common.RelativeDateAdapter
 import edu.bluejack22_1.fidertime.databinding.FragmentMessageItemBinding
-import edu.bluejack22_1.fidertime.models.*
+import edu.bluejack22_1.fidertime.models.Message
+import edu.bluejack22_1.fidertime.models.MessageMember
+import edu.bluejack22_1.fidertime.models.User
 
-class MessageListRecyclerViewAdapter(query: Query) : FirestoreAdapter<MessageListRecyclerViewAdapter.ViewHolder>(query) {
+class MessageListRecyclerViewAdapter (private var messages : ArrayList<Message>) : RecyclerView.Adapter<MessageListRecyclerViewAdapter.ViewHolder>(){
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val itemBinding = FragmentMessageItemBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
@@ -28,23 +27,41 @@ class MessageListRecyclerViewAdapter(query: Query) : FirestoreAdapter<MessageLis
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val snapshot = getSnapshot(position)
-        viewHolder.bind(snapshot)
+        val mesage = messages[position]
+        Log.d("total snapshot count : ", itemCount.toString())
+        if(position == itemCount - 1){
+            if (mesage != null) {
+                setLastItem(mesage.id)
+                Log.d("last item " , getLastItem().toString());
+            }
+        }
+        viewHolder.bind(mesage)
         viewHolder.itemView.setOnClickListener {
-            snapshot?.id?.let { it1 -> onItemClick?.invoke(it1) }
+            mesage.id.let { it1 -> onItemClick?.invoke(it1) }
         }
     }
 
     var onItemClick : ((String) -> Unit)? = null
+    private var lastItem : String? = null
+
+    private fun setLastItem(idItem: String) {
+        this.lastItem = idItem
+    }
+
+    fun getLastItem() : String? {
+        return this.lastItem
+    }
+
+    fun getData(): ArrayList<Message> {
+        return this.messages
+    }
 
     class ViewHolder(private val itemBinding: FragmentMessageItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
 
         private val db = Firebase.firestore
         private val userId = Firebase.auth.currentUser!!.uid
 
-        fun bind(snapshot: DocumentSnapshot?) {
-            val messageItem = snapshot!!.toObject<Message>()!!
-            messageItem.id = snapshot.id
+        fun bind(messageItem: Message) {
             itemBinding.textViewUnreadChatCount.visibility = View.GONE
             if (messageItem.lastChatType == "text") {
                 itemBinding.textViewLastChat.text = messageItem.lastChatText
@@ -131,4 +148,7 @@ class MessageListRecyclerViewAdapter(query: Query) : FirestoreAdapter<MessageLis
         }
     }
 
+    override fun getItemCount(): Int {
+        return messages.size
+    }
 }

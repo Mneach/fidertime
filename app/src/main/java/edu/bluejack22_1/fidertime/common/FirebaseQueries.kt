@@ -9,6 +9,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.Query.Direction
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -320,19 +321,29 @@ class FirebaseQueries {
             val messageMembersRef = Firebase.firestore.collection("messages").document(messageRef.id).collection("members")
             val messageMembers = message.members
 
-            Firebase.firestore.runBatch { batch ->
-                batch.set(messageRef, message)
-                messageMembers.forEach {messageMember ->
-                    if(messageMember == Utilities.getAuthFirebase().uid){
-                        batch.set(messageMembersRef.document(messageMember), MessageMember(messageMember, true, null))
-                    }else{
-                        batch.set(messageMembersRef.document(messageMember), MessageMember(messageMember, false, null))
+                Firebase.firestore.runBatch { batch ->
+                    batch.set(messageRef, message)
+                    messageMembers.forEach {messageMember ->
+                        if(messageMember == Utilities.getAuthFirebase().uid){
+                            batch.set(messageMembersRef.document(messageMember), MessageMember(messageMember, true, null))
+                        }else{
+                            batch.set(messageMembersRef.document(messageMember), MessageMember(messageMember, false, null))
+                        }
+                        batch.set(usersRef.document(messageMember).collection("messages").document(messageRef.id),
+                            UserMessage(id = messageRef.id, notified = true, pinned = false))
                     }
-                    batch.set(usersRef.document(messageMember).collection("messages").document(messageRef.id),
-                        UserMessage(id = messageRef.id, notified = true, pinned = false))
+                }.addOnSuccessListener {
+                    callback.invoke(messageRef.id)
                 }
-            }.addOnSuccessListener {
-                callback.invoke(messageRef.id)
+        }
+
+        fun addLinks(medias : ArrayList<Media>){
+
+            Firebase.firestore.runBatch { batch ->
+                medias.forEach {
+                    val mediaRef = Firebase.firestore.collection("media").document()
+                    batch.set(mediaRef, it)
+                }
             }
         }
 

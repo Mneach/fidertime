@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.databinding.FragmentAddParticipantItemBinding
 import edu.bluejack22_1.fidertime.databinding.FragmentContactItemBinding
 import edu.bluejack22_1.fidertime.models.User
@@ -39,6 +40,8 @@ class SelectedPartcipantListRecyclerViewAdapter (private var contactItems : Arra
             itemBinding.textViewName.text = contactItem.name
             if(contactItem.profileImageUrl.isNotEmpty()){
                 itemBinding.imageViewProfile.load(contactItem.profileImageUrl)
+            }else{
+                itemBinding.imageViewProfile.setImageResource(R.drawable.default_avatar)
             }
         }
     }

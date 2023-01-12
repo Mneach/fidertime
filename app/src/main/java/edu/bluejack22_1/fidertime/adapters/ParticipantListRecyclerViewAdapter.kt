@@ -1,9 +1,11 @@
 package edu.bluejack22_1.fidertime.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.databinding.FragmentContactItemBinding
 import edu.bluejack22_1.fidertime.models.User
 
@@ -41,8 +43,11 @@ class ParticipantListRecyclerViewAdapter (private var participants : ArrayList<U
 
             itemBinding.textViewName.text = contactItem.name
             itemBinding.phoneNumber.text = contactItem.phoneNumber
+            Log.d("image profile : " , contactItem.profileImageUrl)
             if(contactItem.profileImageUrl.isNotEmpty()){
                 itemBinding.imageViewProfile.load(contactItem.profileImageUrl)
+            }else{
+                itemBinding.imageViewProfile.setImageResource(R.drawable.default_avatar)
             }
         }
     }

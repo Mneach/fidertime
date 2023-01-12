@@ -1,18 +1,12 @@
 package edu.bluejack22_1.fidertime.adapters
 
-import FirestoreAdapter
-import android.content.Intent
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.ktx.toObject
 import edu.bluejack22_1.fidertime.databinding.FragmentLinkItemBinding
 import edu.bluejack22_1.fidertime.models.Media
 
-class LinkListRecyclerViewAdapter (query : Query) : FirestoreAdapter<LinkListRecyclerViewAdapter.ViewHolder>(query) {
+class LinkListRecyclerViewAdapter  (private var medias : ArrayList<Media>) : RecyclerView.Adapter<LinkListRecyclerViewAdapter.ViewHolder>(){
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val itemBinding = FragmentLinkItemBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
@@ -20,13 +14,10 @@ class LinkListRecyclerViewAdapter (query : Query) : FirestoreAdapter<LinkListRec
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val linkItem = getSnapshot(position)
+        val linkItem = medias[position]
         viewHolder.bind(linkItem)
         viewHolder.itemView.setOnClickListener {
-            if (linkItem != null) {
-                val linkData = linkItem.toObject<Media>()!!
-                onItemClick?.invoke(linkData.url)
-            }
+            onItemClick?.invoke(linkItem.url)
         }
     }
 
@@ -35,9 +26,12 @@ class LinkListRecyclerViewAdapter (query : Query) : FirestoreAdapter<LinkListRec
     class ViewHolder(private val itemBinding: FragmentLinkItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
 
 
-        fun bind(snapshot: DocumentSnapshot?) {
-            val linkItem = snapshot?.toObject<Media>()!!
-            itemBinding.name.text = linkItem.url
+        fun bind(linkItem: Media?) {
+            itemBinding.name.text = linkItem?.url
         }
+    }
+
+    override fun getItemCount(): Int {
+       return medias.size
     }
 }
