@@ -89,6 +89,7 @@ class MemberListFragment (
 //                        adapter.updateData(userData)
                     }else{
                         userData.clear()
+                        userData.addAll(users)
                         adapter = MemberRecycleViewAdapter(userData , messageMember , this , messageId , memberGroupIds)
                         recyclerViewMember.adapter = adapter
                     }
