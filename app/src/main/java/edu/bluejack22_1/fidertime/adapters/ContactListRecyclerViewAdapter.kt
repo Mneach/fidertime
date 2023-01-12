@@ -37,7 +37,7 @@ class ContactListRecyclerViewAdapter (private var contactItems : ArrayList<User>
 
 
         fun bind(contactItem: User) {
-
+            itemBinding.imageViewProfile.setImageDrawable(null)
             itemBinding.textViewName.text = contactItem.name
             itemBinding.phoneNumber.text = contactItem.phoneNumber
             if(contactItem.profileImageUrl.isNotEmpty()){

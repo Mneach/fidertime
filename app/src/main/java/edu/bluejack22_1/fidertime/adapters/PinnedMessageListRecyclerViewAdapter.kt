@@ -42,6 +42,7 @@ class PinnedMessageListRecyclerViewAdapter(query: Query) : FirestoreAdapter<Pinn
         private val userId = Firebase.auth.currentUser!!.uid
 
         fun bind(snapshot: DocumentSnapshot?) {
+            itemBinding.imageViewProfile.setImageDrawable(null)
             val messageItem = snapshot!!.toObject<Message>()!!
             messageItem.id = snapshot.id
             FirebaseQueries.subscribeToMessage(messageItem.id) { message ->

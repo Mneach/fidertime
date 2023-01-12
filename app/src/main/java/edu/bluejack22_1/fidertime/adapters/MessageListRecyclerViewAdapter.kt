@@ -61,6 +61,7 @@ class MessageListRecyclerViewAdapter (private var messages : ArrayList<Message>)
 
         fun bind(messageItem: Message) {
             itemBinding.textViewUnreadChatCount.visibility = View.GONE
+            itemBinding.imageViewProfile.setImageDrawable(null)
             if (messageItem.lastChatType == "text") {
                 itemBinding.textViewLastChat.text = messageItem.lastChatText
             } else {
