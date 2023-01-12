@@ -74,7 +74,7 @@ class ProfileFragment : Fragment() {
             val user : User = it
             binding.editButton.setOnClickListener(View.OnClickListener {
                 val intent = Intent(context , EditProfileActivity::class.java)
-                intent.putExtra("UserData" , user)
+                intent.putExtra("userId" , user.id)
                 startActivity(intent)
 
             })
@@ -91,13 +91,13 @@ class ProfileFragment : Fragment() {
         TabLayoutMediator(binding.tabLayoutMessageList, binding.pagerMessageList) {tab, position ->
             when (position) {
                 0 -> {
-                    tab.text = "Media"
+                    tab.text = getString(R.string.media)
                 }
                 1 -> {
-                    tab.text = "Files"
+                    tab.text = getString(R.string.file)
                 }
                 2 -> {
-                    tab.text = "Links"
+                    tab.text = getString(R.string.link)
                 }
             }
         }.attach()
@@ -108,22 +108,29 @@ class ProfileFragment : Fragment() {
         binding.email.text = it.email
         binding.phoneNumber.text = it.phoneNumber
         binding.bio.text = it.bio
-        if(it.media.size == 0){
-            binding.mediaCount.text = "0"
-        }else{
-            binding.mediaCount.text = it.media.size.toString()
+
+        FirebaseQueries.getTotalMediaUser(Utilities.getAuthFirebase().uid.toString()){ totalMedia ->
+            if(totalMedia.toInt() == 0){
+                binding.mediaCount.text = "0"
+            }else{
+                binding.mediaCount.text = totalMedia.toString()
+            }
         }
 
-        if(it.files.size == 0){
-            binding.fileCount.text = "0"
-        }else{
-            binding.fileCount.text = it.media.size.toString()
+        FirebaseQueries.getTotalFileUser(Utilities.getAuthFirebase().uid.toString()){ totalFile ->
+            if(totalFile.toInt() == 0){
+                binding.fileCount.text = "0"
+            }else{
+                binding.fileCount.text = totalFile.toString()
+            }
         }
 
-        if(it.links.size == 0){
-            binding.linkCount.text = "0"
-        }else{
-            binding.linkCount.text = it.media.size.toString()
+        FirebaseQueries.getTotalLinkUser(Utilities.getAuthFirebase().uid.toString()){ totalLink ->
+            if(totalLink.toInt() == 0){
+                binding.linkCount.text = "0"
+            }else{
+                binding.linkCount.text = totalLink.toString()
+            }
         }
 
         if(it.profileImageUrl != "" && it.profileImageUrl.isNotEmpty()){

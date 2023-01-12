@@ -293,10 +293,10 @@ class TestAdapter(
                 }
                 else {
                     if (messageType == "personal") {
-                        binding.textViewReadBy.text = "Read"
+                        binding.textViewReadBy.text = itemView.context.getString(R.string.read)
                     }
                     else {
-                        binding.textViewReadBy.text = "Read By $totalReadBy"
+                        binding.textViewReadBy.text = itemView.context.getString(R.string.readBy) + " $totalReadBy"
                     }
                 }
             }
@@ -372,10 +372,10 @@ class TestAdapter(
                 }
                 else {
                     if (messageType == "personal") {
-                        binding.textViewReadBy.text = "Read"
+                        binding.textViewReadBy.text = itemView.context.getString(R.string.read)
                     }
                     else {
-                        binding.textViewReadBy.text = "Read By $totalReadBy"
+                        binding.textViewReadBy.text = itemView.context.getString(R.string.readBy) + " $totalReadBy"
                     }
                 }
             }
@@ -432,10 +432,10 @@ class TestAdapter(
                 }
                 else {
                     if (messageType == "personal") {
-                        binding.textViewReadBy.text = "Read"
+                        binding.textViewReadBy.text = itemView.context.getString(R.string.read)
                     }
                     else {
-                        binding.textViewReadBy.text = "Read By $totalReadBy"
+                        binding.textViewReadBy.text = itemView.context.getString(R.string.readBy) + " $totalReadBy"
                     }
                 }
             }
@@ -491,10 +491,10 @@ class TestAdapter(
                 }
                 else {
                     if (messageType == "personal") {
-                        binding.textViewReadBy.text = "Read"
+                        binding.textViewReadBy.text = itemView.context.getString(R.string.read)
                     }
                     else {
-                        binding.textViewReadBy.text = "Read By $totalReadBy"
+                        binding.textViewReadBy.text = itemView.context.getString(R.string.readBy) + " $totalReadBy"
                     }
                 }
             }

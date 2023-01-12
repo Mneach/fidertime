@@ -6,15 +6,13 @@ import android.net.Uri
 import android.util.Log
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FieldPath
-import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.*
 import com.google.firebase.firestore.Query.Direction
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import edu.bluejack22_1.fidertime.fragments.FileListFragment
 import edu.bluejack22_1.fidertime.models.*
 
 class FirebaseQueries {
@@ -487,6 +485,46 @@ class FirebaseQueries {
             messageRef.delete().addOnSuccessListener {
                 userMessageRef.delete().addOnSuccessListener {
                     callback.invoke()
+                }
+            }
+        }
+
+        fun getTotalMediaUser(userId : String, callback: (totalMedia : Long) -> Unit){
+            val mediaRef = Firebase.firestore.collection("media").whereEqualTo("senderUserId", userId).whereIn("type" , listOf("image" , "video"))
+            val countQuery = mediaRef.count()
+            countQuery.get(AggregateSource.SERVER).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val snapshot = task.result
+                    Log.d("total media : ", snapshot.count.toString())
+                    callback.invoke(snapshot.count)
+                } else {
+                    Log.d("Count Media Error", "Count failed: ", task.getException())
+                }
+            }
+        }
+
+        fun getTotalFileUser(userId : String, callback: (totalMedia : Long) -> Unit){
+            val fileRef = Firebase.firestore.collection("media").whereEqualTo("senderUserId", userId).whereEqualTo("type" , "file")
+            val countQuery = fileRef.count()
+            countQuery.get(AggregateSource.SERVER).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val snapshot = task.result
+                    callback.invoke(snapshot.count)
+                } else {
+                    Log.d("Count Media Error", "Count failed: ", task.getException())
+                }
+            }
+        }
+
+        fun getTotalLinkUser(userId : String, callback: (totalMedia : Long) -> Unit){
+            val linkRef = Firebase.firestore.collection("media").whereEqualTo("senderUserId", userId).whereEqualTo("type" , "link")
+            val countQuery = linkRef.count()
+            countQuery.get(AggregateSource.SERVER).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val snapshot = task.result
+                    callback.invoke(snapshot.count)
+                } else {
+                    Log.d("Count Media Error", "Count failed: ", task.getException())
                 }
             }
         }

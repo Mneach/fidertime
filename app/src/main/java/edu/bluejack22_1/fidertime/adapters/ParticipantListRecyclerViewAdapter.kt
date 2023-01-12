@@ -43,7 +43,6 @@ class ParticipantListRecyclerViewAdapter (private var participants : ArrayList<U
 
             itemBinding.textViewName.text = contactItem.name
             itemBinding.phoneNumber.text = contactItem.phoneNumber
-            Log.d("image profile : " , contactItem.profileImageUrl)
             if(contactItem.profileImageUrl.isNotEmpty()){
                 itemBinding.imageViewProfile.load(contactItem.profileImageUrl)
             }else{

@@ -63,18 +63,15 @@ class MemberRecycleViewAdapter (
 
             itemBinding.name.text = user.name
             itemBinding.status.text = if (user.status == "offline") {
-                "Last seen " + user.lastSeenTimestamp?.toDate()
+                itemView.context.getString(R.string.last_seen).plus(" ") + user.lastSeenTimestamp?.toDate()
                     ?.let { RelativeDateAdapter(it).getRelativeString() }
             } else {
                 user.status
             }
 
             // hide remove
-            Log.d("member : " , user.name.plus(" ").plus(currentUser.admin.toString().plus(" ").plus(user.id).plus(" | ").plus(currentUser.id.toString())))
 
             if(!currentUser.admin || user.id == currentUser.id){
-                Log.d("member 2 : " , user.name.plus(" ").plus(currentUser.admin.toString().plus(" ").plus(user.id).plus(" | ").plus(currentUser.id.toString())))
-
                 itemBinding.removeMember.visibility = View.GONE
             }else{
                 itemBinding.removeMember.setOnClickListener {

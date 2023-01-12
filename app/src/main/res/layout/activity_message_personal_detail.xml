@@ -138,8 +138,8 @@
                     app:track="@drawable/track"
                     app:showText="true"
                     android:textColor="@color/black"
-                    android:textOn="on"
-                    android:textOff="off"/>
+                    android:textOn="@string/On"
+                    android:textOff="@string/Off"/>
             </LinearLayout>
 
         </LinearLayout>

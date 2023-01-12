@@ -62,13 +62,13 @@ class MessagePersonalDetailActivity : AppCompatActivity() {
         TabLayoutMediator(binding.tabLayoutMessageList, binding.pagerMessageList) {tab, position ->
             when (position) {
                 0 -> {
-                    tab.text = "Media"
+                    tab.text = getString(R.string.media)
                 }
                 1 -> {
-                    tab.text = "Files"
+                    tab.text = getString(R.string.file)
                 }
                 2 -> {
-                    tab.text = "Links"
+                    tab.text = getString(R.string.link)
                 }
             }
         }.attach()

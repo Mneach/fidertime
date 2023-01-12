@@ -349,10 +349,8 @@ class MessageActivity : AppCompatActivity() {
             .orderBy("timestamp", Query.Direction.ASCENDING)
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                Log.d("dy = " , dy.toString())
                 if(dy < 0){
-                    Log.d("current child" , (recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition().toString())
-                    if((recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition() == 1 && !isLoading){
+                   if((recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition() == 1 && !isLoading){
                         loadMoreData(query)
                     }
                 }
@@ -398,7 +396,6 @@ class MessageActivity : AppCompatActivity() {
     private fun loadMoreData(query : Query){
         isLoading = true
         LIMIT += LIMIT;
-        Log.d("limit 2 : " , LIMIT.toString())
         query.limitToLast(LIMIT).addSnapshotListener { snapshot , e ->
             if (e != null) {
                 return@addSnapshotListener
@@ -437,7 +434,7 @@ class MessageActivity : AppCompatActivity() {
         }else {
             size = 10
         }
-        Log.d("size" , size.toString())
+
         recyclerView.scrollToPosition(size.toInt())
         prevSize += LIMIT
     }
@@ -469,7 +466,7 @@ class MessageActivity : AppCompatActivity() {
     private fun setNameAndProfile(message: Message) {
         if (message.messageType == "group") {
             binding.toolbarMessage.textViewTitle.text = message.groupName
-            binding.toolbarMessage.textViewSubtitle.text = "${message.members.size} members"
+            binding.toolbarMessage.textViewSubtitle.text = "${message.members.size}".plus(" ").plus(R.string.members)
             binding.toolbarMessage.imageViewProfile.load(message.groupImageUrl)
             setActionBar()
             binding.toolbarMessage.actionBarProfile.setOnClickListener{
@@ -494,9 +491,10 @@ class MessageActivity : AppCompatActivity() {
     }
 
     private fun setNameAndProfile(user: User) {
+        val last_seen = getString(R.string.last_seen)
         binding.toolbarMessage.textViewTitle.text = user.name
         binding.toolbarMessage.textViewSubtitle.text = if (user.status == "offline") {
-            "Last seen " + user.lastSeenTimestamp?.toDate()
+            "$last_seen " + user.lastSeenTimestamp?.toDate()
                 ?.let { RelativeDateAdapter(it).getRelativeString() }
         } else {
             user.status

@@ -22,7 +22,6 @@ class MessagePersonalMediaPagerAdapter (fragmentManager: FragmentManager, lifecy
 
     override fun createFragment(position: Int): Fragment {
         val db = Firebase.firestore
-        Log.d("message id = " , messageId)
 
         return when (position) {
             0 -> {

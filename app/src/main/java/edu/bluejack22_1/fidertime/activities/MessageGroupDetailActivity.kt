@@ -48,16 +48,16 @@ class MessageGroupDetailActivity : AppCompatActivity() {
         TabLayoutMediator(binding.tabLayoutMessageList, binding.pagerMessageList) {tab, position ->
             when (position) {
                 0 -> {
-                    tab.text = "Members"
+                    tab.text = getString(R.string.members)
                 }
                 1 -> {
-                    tab.text = "Media"
+                    tab.text = getString(R.string.media)
                 }
                 2 -> {
-                    tab.text = "Files"
+                    tab.text = getString(R.string.file)
                 }
                 3 -> {
-                    tab.text = "Links"
+                    tab.text = getString(R.string.link)
                 }
             }
         }.attach()
@@ -69,8 +69,8 @@ class MessageGroupDetailActivity : AppCompatActivity() {
             crossfade(300)
             placeholder(R.drawable.image_placeholder)
         }
-        binding.countMember.text = message.members.size.toString().plus(" Members, ")
-        binding.countOnline.text = onlineMember.toString().plus(" Online")
+        binding.countMember.text = message.members.size.toString().plus(" ").plus(getString(R.string.members)).plus(" , ")
+        binding.countOnline.text = onlineMember.toString().plus(" ").plus(getString(R.string.online))
         binding.groupName.text = message.groupName
         RichTextHelper.linkAndMentionRecognizer(this, binding.groupDescription, message.groupDescription)
         setActionBar()
@@ -116,7 +116,6 @@ class MessageGroupDetailActivity : AppCompatActivity() {
 
         if (id == R.id.leave_group) {
             val userId = Utilities.getAuthFirebase().uid.toString()
-            Log.d("masuk ke sini" , "apa kek")
             FirebaseQueries.getUserRole(messageId , userId){ messageMember ->
                 if(messageMember.admin && memberGroupIds.size > 1){
                     // LEAVE GROUP AND ASSIGN ADMIN ROLE

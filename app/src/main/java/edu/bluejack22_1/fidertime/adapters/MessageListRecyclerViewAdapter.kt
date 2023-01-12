@@ -28,11 +28,9 @@ class MessageListRecyclerViewAdapter (private var messages : ArrayList<Message>)
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val mesage = messages[position]
-        Log.d("total snapshot count : ", itemCount.toString())
         if(position == itemCount - 1){
             if (mesage != null) {
                 setLastItem(mesage.id)
-                Log.d("last item " , getLastItem().toString());
             }
         }
         viewHolder.bind(mesage)
@@ -67,10 +65,10 @@ class MessageListRecyclerViewAdapter (private var messages : ArrayList<Message>)
                 itemBinding.textViewLastChat.text = messageItem.lastChatText
             } else {
                 if (messageItem.lastChatType == "image") {
-                    itemBinding.textViewLastChat.text = "Sent an image"
+                    itemBinding.textViewLastChat.text = itemView.context.getString(R.string.sent_an_image)
                 }
                 else {
-                    itemBinding.textViewLastChat.text = "Sent a " + messageItem.lastChatType
+                    itemBinding.textViewLastChat.text = itemView.context.getString(R.string.sent_a) + messageItem.lastChatType
                 }
             }
             itemBinding.textViewTime.text = messageItem.lastChatTimestamp?.toDate()
