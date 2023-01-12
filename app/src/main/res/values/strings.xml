@@ -77,19 +77,27 @@
     <string name="success_leave_group">Successfully leave the group</string>
 
     <!--  STATUS  -->
-    <string name="last_seen">Last Seen</string>
+    <string name="last_seen">Last Seen </string>
     <string name="notification">Notification</string>
     <string name="On">On</string>
     <string name="Off">Off</string>
     <string name="admin">Admin</string>
     <string name="member">Member</string>
+    <string name="online">Online</string>
+    <string name="read">Read</string>
+    <string name="readBy">Read By</string>
+    <string name="sent_an_image">sent an image</string>
+
 
     <!-- TAB LAYOUT -->
     <string name="all">All</string>
     <string name="personal">Personal</string>
     <string name="group">Group</string>
-    <string name="title_activity_create_group_acitvity">CreateGroupAcitvity</string>
-    <string name="title_activity_create_group">CreateGroupActivity</string>
+    <string name="media">Media</string>
+    <string name="file">Files</string>
+    <string name="link">Links</string>
+    <string name="title_activity_create_group_acitvity" translatable="false">CreateGroupAcitvity</string>
+    <string name="title_activity_create_group" translatable="false">CreateGroupActivity</string>
     <string name="create">Create</string>
     <string name="create_group">Create Group</string>
     <string name="add_participant">Add Participant</string>
@@ -103,5 +111,7 @@
     <string name="name_contains_space_validation">Username can not contains space</string>
     <string name="username_unique_validation">Username must be unique</string>
 
+    <string name="members">members</string>
+    <string name="login">Login</string>
 
 </resources>

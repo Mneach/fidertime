@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:backgroundTint="@color/black"
-                android:text="Login"
+                android:text="@string/login"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="24sp"
@@ -45,7 +45,7 @@
                 android:id="@+id/email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Email"
+                android:hint="@string/email"
                 android:textColor="@color/white"
                 android:textColorHint="@color/hint_color"
                 android:paddingBottom="20dp"
@@ -57,7 +57,7 @@
                 android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Password"
+                android:hint="@string/password"
                 android:textColor="@color/white"
                 android:textColorHint="@color/hint_color"
                 android:paddingBottom="20dp"
@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:backgroundTint="@color/ascent_color"
-                android:text="Login" />
+                android:text="@string/login" />
 
             <Button
                 android:id="@+id/button_login_google"

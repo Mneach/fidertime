@@ -7,11 +7,14 @@ import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.util.Patterns
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -24,28 +27,39 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.adapters.ChatListRecyclerViewAdapter
+import edu.bluejack22_1.fidertime.adapters.MemberRecycleViewAdapter
+import edu.bluejack22_1.fidertime.adapters.TestAdapter
 import edu.bluejack22_1.fidertime.common.*
 import edu.bluejack22_1.fidertime.databinding.ActivityMessageBinding
 import edu.bluejack22_1.fidertime.models.Chat
+import edu.bluejack22_1.fidertime.models.Media
 import edu.bluejack22_1.fidertime.models.Message
 import edu.bluejack22_1.fidertime.models.User
 import java.io.File
 import java.io.IOException
+import kotlin.math.log
 
 
 class MessageActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMessageBinding
     private lateinit var messageId: String
-    private lateinit var adapter: ChatListRecyclerViewAdapter
+//    private lateinit var adapter: ChatListRecyclerViewAdapter
+    private lateinit var adapter : TestAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var type: String
     private lateinit var mediaRecorder: MediaRecorder
     private lateinit var recordingPath: String
     private var pinned = false
     private val userId = Firebase.auth.currentUser!!.uid
+    private lateinit var chatData : ArrayList<Chat>
+    var isLoading = false
+    var LIMIT : Long = 12
+    var prevSize : Long = 0;
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +67,7 @@ class MessageActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         messageId = intent.getStringExtra("messageId").toString()
-
+        chatData = arrayListOf()
         initializeActionBar()
         initializeAttachmentBox()
         initializeChatBox()
@@ -277,6 +291,7 @@ class MessageActivity : AppCompatActivity() {
                     userId,
                     Timestamp.now()
                 )
+                sendLink(editTextChat.text.toString())
                 editTextChat.text.clear()
                 FirebaseQueries.sendChatText(chat) {
                     scrollToBottom()
@@ -286,10 +301,41 @@ class MessageActivity : AppCompatActivity() {
         }
     }
 
+    private fun sendLink(text: String){
+        val linkMatcher = Patterns.WEB_URL.matcher(text)
+        var matchStart: Int
+        var matchEnd: Int
+        var links : ArrayList<Media> = arrayListOf()
+        while(linkMatcher.find()){
+            matchStart = linkMatcher.start(1)
+            matchEnd = linkMatcher.end()
+
+            var url = text.substring(matchStart, matchEnd)
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "https://$url"
+            }
+            var media = Media()
+            media.messageId = messageId
+            media.senderUserId = Utilities.getAuthFirebase().uid.toString()
+            media.type = "link"
+            media.timestamp = Timestamp.now()
+            media.name = url
+            media.url = url
+
+            links.add(media)
+        }
+
+        if(links.isNotEmpty()){
+            FirebaseQueries.addLinks(links)
+        }
+    }
+
     private fun scrollToBottom() {
-        recyclerView.postDelayed({
-            recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
-        }, 500)
+        if(adapter.itemCount != 0){
+            recyclerView.postDelayed({
+                recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
+            }, 500)
+        }
     }
 
     private fun initializeRecyclerView() {
@@ -301,16 +347,97 @@ class MessageActivity : AppCompatActivity() {
         recyclerView.addItemDecoration(MarginItemDecoration(40, LinearLayoutManager.VERTICAL))
         val query = Firebase.firestore.collection("chats").whereEqualTo("messageId", messageId)
             .orderBy("timestamp", Query.Direction.ASCENDING)
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if(dy < 0){
+                   if((recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition() == 1 && !isLoading){
+                        loadMoreData(query)
+                    }
+                }
+            }
+        })
+//        FirebaseQueries.getMessageNotificationStatus(Utilities.getAuthFirebase().uid.toString(), messageId) { notificationStatus ->
+//            adapter = ChatListRecyclerViewAdapter(query.limitToLast(12), "personal", this , notificationStatus.toBoolean())
+//            recyclerView.adapter = adapter
+//            adapter.startListening()
+//            adapter.notifyDataSetChanged()
+//        }
         FirebaseQueries.getMessageNotificationStatus(Utilities.getAuthFirebase().uid.toString(), messageId) { notificationStatus ->
-            adapter = ChatListRecyclerViewAdapter(query, "personal", this , notificationStatus.toBoolean())
+            adapter = TestAdapter("personal",chatData, this , notificationStatus.toBoolean())
             recyclerView.adapter = adapter
-            adapter.startListening()
-            adapter.notifyDataSetChanged()
-            Log.d("recyle view" , "Show ? ")
+            query.limitToLast(LIMIT).addSnapshotListener { snapshot , e ->
+                if (e != null) {
+                    return@addSnapshotListener
+                }
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val chats = ArrayList<Chat>()
+                    for(doc in snapshot){
+                        val chat = doc.toObject<Chat>()
+                        chat.id = doc.id
+                        chats.add(chat)
+                    }
+
+                    if(adapter.getData().isEmpty()){
+                        chatData.addAll(chats)
+                        adapter = TestAdapter("personal",chatData, this , notificationStatus.toBoolean())
+                        recyclerView.adapter = adapter
+//                        adapter.updateData(userData)
+                    }else{
+                        chatData.clear()
+                        chatData.addAll(chats)
+                        adapter = TestAdapter("personal",chatData, this , notificationStatus.toBoolean())
+                        recyclerView.adapter = adapter
+                    }
+                }
+            }
+            }
+        }
+
+    private fun loadMoreData(query : Query){
+        isLoading = true
+        LIMIT += LIMIT;
+        query.limitToLast(LIMIT).addSnapshotListener { snapshot , e ->
+            if (e != null) {
+                return@addSnapshotListener
+            }
+            if (snapshot != null && !snapshot.isEmpty) {
+                val chats = ArrayList<Chat>()
+                for (doc in snapshot) {
+                    val chat = doc.toObject<Chat>()
+                    chat.id = doc.id
+                    chats.add(chat)
+                }
+                if(chats != adapter.getData()){
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        isLoading = false
+                        chatData.clear()
+                        chatData.addAll(chats)
+                        adapter = TestAdapter("personal",chatData, this , false)
+                        recyclerView.adapter = adapter
+                        setScroll()
+                    }, 500)
+                }else{
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        isLoading = false
+                    }, 500)
+                }
+            }
+
         }
     }
 
+    private fun setScroll(){
+        var size = 0
+        if(prevSize.toInt() == 0){
+            size = 12
+//            prevSize = size
+        }else {
+            size = 10
+        }
 
+        recyclerView.scrollToPosition(size.toInt())
+        prevSize += LIMIT
+    }
 
     private fun initializeActionBar() {
         FirebaseQueries.subscribeToMessage(messageId) {
@@ -339,7 +466,7 @@ class MessageActivity : AppCompatActivity() {
     private fun setNameAndProfile(message: Message) {
         if (message.messageType == "group") {
             binding.toolbarMessage.textViewTitle.text = message.groupName
-            binding.toolbarMessage.textViewSubtitle.text = "${message.members.size} members"
+            binding.toolbarMessage.textViewSubtitle.text = "${message.members.size}".plus(" ").plus(R.string.members)
             binding.toolbarMessage.imageViewProfile.load(message.groupImageUrl)
             setActionBar()
             binding.toolbarMessage.actionBarProfile.setOnClickListener{
@@ -364,9 +491,10 @@ class MessageActivity : AppCompatActivity() {
     }
 
     private fun setNameAndProfile(user: User) {
+        val last_seen = getString(R.string.last_seen)
         binding.toolbarMessage.textViewTitle.text = user.name
         binding.toolbarMessage.textViewSubtitle.text = if (user.status == "offline") {
-            "Last seen " + user.lastSeenTimestamp?.toDate()
+            "$last_seen " + user.lastSeenTimestamp?.toDate()
                 ?.let { RelativeDateAdapter(it).getRelativeString() }
         } else {
             user.status
@@ -401,7 +529,7 @@ class MessageActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        adapter.stopListening()
+//        adapter.stopListening()
     }
 
     override fun onPause() {

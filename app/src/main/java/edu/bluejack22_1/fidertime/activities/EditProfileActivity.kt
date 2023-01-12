@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import coil.load
+import com.google.firebase.ktx.Firebase
 import edu.bluejack22_1.fidertime.R
 import edu.bluejack22_1.fidertime.common.FirebaseQueries
 import edu.bluejack22_1.fidertime.common.FirebaseQueries.Companion.updateUserData
@@ -30,22 +31,26 @@ class EditProfileActivity : AppCompatActivity() {
         disableButton(binding.emailInput)
         disableButton(binding.phoneNumberInput)
 
-        val user : User = intent.getSerializableExtra("UserData") as User
+        val userId : String? = intent.getStringExtra("userId")
 
-        binding.toolbarEditProfile.cancelButton.setOnClickListener{
-            val intent = Intent(this , MainActivity::class.java)
-            intent.putExtra("FragmentOption" , "profile")
-            startActivity(intent)
-        }
+        if (userId != null) {
+            FirebaseQueries.getUserById(userId){ user ->
+                attachUserData(user)
 
-        attachUserData(user)
+                binding.toolbarEditProfile.cancelButton.setOnClickListener{
+                    val intent = Intent(this , MainActivity::class.java)
+                    intent.putExtra("FragmentOption" , "profile")
+                    startActivity(intent)
+                }
 
-        binding.imageViewProfile.setOnClickListener{
-            selectImage()
-        }
+                binding.imageViewProfile.setOnClickListener{
+                    selectImage()
+                }
 
-        binding.toolbarEditProfile.editButton.setOnClickListener{
-            updateUserData()
+                binding.toolbarEditProfile.editButton.setOnClickListener{
+                    updateUserData(user)
+                }
+            }
         }
     }
 
@@ -70,7 +75,7 @@ class EditProfileActivity : AppCompatActivity() {
         editText.showSoftInputOnFocus = false
     }
 
-    private fun updateUserData(){
+    private fun updateUserData(user : User){
         var email = binding.emailInput.text.toString()
         var phoneNumber = binding.phoneNumberInput.text.toString()
         var name = binding.nameInput.text.toString()
@@ -86,31 +91,30 @@ class EditProfileActivity : AppCompatActivity() {
         FirebaseQueries.getUsers{
 
             var checkName = false
-            val userFromIntent : User = intent.getSerializableExtra("UserData") as User
-            for(user in it){
-                if(user.name == name && userFromIntent.name != name){
+            for(userFromDB in it){
+                if(userFromDB.name == name && user.name != name){
                     checkName = true
                     break
                 }
             }
 
             if(!checkName){
-                userFromIntent.email = email
-                userFromIntent.phoneNumber = phoneNumber
-                userFromIntent.name = name
-                userFromIntent.bio = bio
+                user.email = email
+                user.phoneNumber = phoneNumber
+                user.name = name
+                user.bio = bio
                 if(checkChangeImageUrl){
-                    FirebaseQueries.uploadImage(userFromIntent , filePath , this) { imageUrl ->
-                        userFromIntent.profileImageUrl = imageUrl
+                    FirebaseQueries.uploadImage(user , filePath , this) { imageUrl ->
+                        user.profileImageUrl = imageUrl
 
-                        updateUserData(uid.toString() , userFromIntent) {
+                        updateUserData(uid.toString() , user) {
                             val intent = Intent(this , MainActivity::class.java)
                             intent.putExtra("FragmentOption" , "profile")
                             startActivity(intent)
                         }
                     }
                 }else{
-                    updateUserData(uid.toString() , userFromIntent) {
+                    updateUserData(uid.toString() , user) {
                         val intent = Intent(this , MainActivity::class.java)
                         intent.putExtra("FragmentOption" , "profile")
                         startActivity(intent)

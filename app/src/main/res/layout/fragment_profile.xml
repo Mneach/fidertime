@@ -7,9 +7,9 @@
     android:background="@color/primary_color"
     tools:context=".fragments.ProfileFragment">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+<!--    <ScrollView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent" >-->
         <!-- TODO: Update blank fragment layout -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -107,7 +107,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/white"
-                                android:text="Media"
+                                android:text="@string/media"
                                 android:layout_marginStart="10dp"
                                 android:textSize="18sp"
                                 />
@@ -137,7 +137,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/white"
-                                android:text="Files"
+                                android:text="@string/file"
                                 android:layout_marginStart="10dp"
                                 android:textSize="18sp"
                                 android:textAlignment="center"
@@ -169,7 +169,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/white"
-                                android:text="Link"
+                                android:text="@string/link"
                                 android:layout_marginStart="10dp"
                                 android:textSize="20sp"
                                 />
@@ -238,11 +238,6 @@
 
 
         </LinearLayout>
-    </ScrollView>
-
-
-
-
-
+<!--    </ScrollView>-->
 
 </FrameLayout>

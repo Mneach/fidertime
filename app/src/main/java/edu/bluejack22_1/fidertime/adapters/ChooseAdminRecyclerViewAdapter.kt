@@ -58,9 +58,10 @@ class ChooseAdminRecyclerViewAdapter (query: Query) : FirestoreAdapter<ChooseAdm
                 itemBinding.imageViewProfile.setBackgroundResource(R.drawable.default_avatar)
             }
 
+            val last_seen = itemView.context.getString(R.string.last_seen)
             itemBinding.name.text = user.name
             itemBinding.status.text = if (user.status == "offline") {
-                "Last seen " + user.lastSeenTimestamp?.toDate()
+                "$last_seen " + user.lastSeenTimestamp?.toDate()
                     ?.let { RelativeDateAdapter(it).getRelativeString() }
             } else {
                 user.status

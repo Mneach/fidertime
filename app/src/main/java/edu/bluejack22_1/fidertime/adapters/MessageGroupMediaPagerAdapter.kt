@@ -21,25 +21,25 @@ class MessageGroupMediaPagerAdapter (fragmentManager: FragmentManager, lifecycle
 
     override fun createFragment(position: Int): Fragment {
         val db = Firebase.firestore
-        Log.d("message id = " , messageId)
 
         return when (position) {
             0 -> {
                 MemberListFragment(
-                    db.collection("users").whereIn(FieldPath.documentId() , memberGroupIds),
+                    db.collection("users").whereIn(FieldPath.documentId() , memberGroupIds).orderBy(FieldPath.documentId()),
                     messageId,
                     memberGroupIds
                 )
             }
             1 -> {
                 MediaListFragment(
-                    db.collection("media").whereEqualTo("messageId", messageId).whereEqualTo("type" , "image").orderBy("timestamp", Query.Direction.DESCENDING)
+                    db.collection("media").whereEqualTo("messageId", messageId).whereIn("type" , listOf("image" , "video")).orderBy("timestamp", Query.Direction.DESCENDING)
                 )
             }
             2 -> {
                 FileListFragment(
                     db.collection("media").whereEqualTo("messageId", messageId).whereEqualTo("type" , "file").orderBy("timestamp", Query.Direction.DESCENDING)
                 )
+//                FileListFragment()
             }
             3 -> {
                 LinkListFragment(
@@ -48,7 +48,7 @@ class MessageGroupMediaPagerAdapter (fragmentManager: FragmentManager, lifecycle
             }
             else -> {
                 MediaListFragment(
-                    db.collection("media").whereEqualTo("messageId", messageId).whereEqualTo("type" , "link").orderBy("timestamp", Query.Direction.DESCENDING)
+                    db.collection("media").whereEqualTo("messageId", messageId).whereIn("type" , listOf("image" , "video")).orderBy("timestamp", Query.Direction.DESCENDING)
                 )
             }
         }

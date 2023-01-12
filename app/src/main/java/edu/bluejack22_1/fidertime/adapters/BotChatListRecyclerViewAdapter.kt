@@ -41,7 +41,7 @@ class BotChatListRecyclerViewAdapter(private val chats: ArrayList<Chat>) :
     ) {
         override fun bind(chat: Chat) {
             binding.textViewChat.text = chat.chatText
-            binding.textViewReadBy.text = "Read"
+            binding.textViewReadBy.text = itemView.context.getString(R.string.read)
             binding.textViewTimestamp.text = chat.timestamp?.toDate()
                 ?.let { RelativeDateAdapter(it).getHourMinuteFormat() }
             FirebaseQueries.subscribeToUser(chat.senderUserId) {
